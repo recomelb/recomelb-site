@@ -970,6 +970,109 @@
   .hero-sub      { animation: fadeUp 0.7s ease both 0.42s; }
   .hero-actions  { animation: fadeUp 0.7s ease both 0.50s; }
   .live-ticker   { animation: fadeUp 0.8s ease both 0.60s; }
+
+  /* HAMBURGER */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--text-secondary);
+    transition: all 0.25s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .nav-dropdown {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 0; right: 0;
+    background: rgba(10,15,30,0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+    z-index: 99;
+    padding: 8px 0 16px;
+  }
+  .nav-dropdown.open { display: block; }
+  .nav-dropdown a {
+    display: block;
+    padding: 14px 24px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-dropdown a:hover { color: var(--gold-light); }
+
+  /* ── TABLET (≤1024px) ── */
+  @media (max-width: 1024px) {
+    .suburb-grid,
+    .commercial-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ── MOBILE (≤768px) ── */
+  @media (max-width: 768px) {
+    /* Global padding */
+    nav { padding: 0 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .suburb-strip { padding: 60px 20px; }
+    .audience-section { padding: 60px 20px; }
+    .news-section { padding: 60px 20px; }
+    .email-section { padding: 60px 20px; }
+    .founder-section { padding: 60px 20px; }
+    footer { padding: 32px 20px; }
+
+    /* Nav: hide links, show hamburger */
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+
+    /* Hero: stack headline + stats vertically */
+    .hero {
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .hero-headline {
+      font-size: clamp(38px, 11vw, 56px);
+    }
+    .live-ticker {
+      position: static;
+      transform: none;
+      width: 100%;
+      margin-top: 40px;
+    }
+
+    /* Grids: 1 column */
+    .suburb-grid,
+    .commercial-grid { grid-template-columns: 1fr; }
+    .audience-grid { grid-template-columns: 1fr; }
+    .news-grid { grid-template-columns: 1fr; }
+    .email-section { grid-template-columns: 1fr; gap: 40px; }
+    .founder-section { grid-template-columns: 1fr; gap: 40px; }
+
+    /* Founder: photo full width, capped height */
+    .founder-photo-placeholder { aspect-ratio: 4/3; }
+
+    /* Section header stacks */
+    .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+    /* Hero bg line hidden on mobile */
+    .hero-bg-line { display: none; }
+
+    /* Scroll hint hidden */
+    .scroll-hint { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -985,7 +1088,19 @@
     <li><a href="#about">About</a></li>
   </ul>
   <a href="#subscribe" class="nav-cta">Weekly digest</a>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="nav-dropdown" id="navDropdown">
+  <a href="#residential" class="nav-dropdown-link">Residential</a>
+  <a href="#commercial" class="nav-dropdown-link">Commercial</a>
+  <a href="#for-you" class="nav-dropdown-link">For you</a>
+  <a href="#news" class="nav-dropdown-link">News</a>
+  <a href="#about" class="nav-dropdown-link">About</a>
+  <a href="#subscribe" class="nav-dropdown-link">Weekly digest</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -1434,6 +1549,20 @@
     });
   }, { threshold: 0.1 });
   cards.forEach(c => obs.observe(c));
+
+  // Hamburger menu
+  const hamburger = document.getElementById('navHamburger');
+  const dropdown = document.getElementById('navDropdown');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    dropdown.classList.toggle('open');
+  });
+  dropdown.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      dropdown.classList.remove('open');
+    });
+  });
 </script>
 </body>
 </html>
