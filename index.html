@@ -1019,8 +1019,8 @@
 <nav>
   <a href="#" class="nav-logo">RECO<span>MELB</span></a>
   <ul class="nav-links">
-    <li><a href="#" onclick="switchType('residential'); return false;">Residential</a></li>
-    <li><a href="#" onclick="switchType('commercial'); return false;">Commercial</a></li>
+    <li><a href="#" onclick="navSwitch('residential'); return false;">Residential</a></li>
+    <li><a href="#" onclick="navSwitch('commercial'); return false;">Commercial</a></li>
     <li><a href="#for-you">For you</a></li>
     <li><a href="#news">News</a></li>
     <li><a href="#about">About</a></li>
@@ -1479,6 +1479,11 @@
 
   let current = 'residential';
   let countTimer = null;
+
+  function navSwitch(type) {
+    switchType(type);
+    document.getElementById(type).scrollIntoView({behavior: 'smooth'});
+  }
 
   function switchType(type) {
     if (type === current) return;
