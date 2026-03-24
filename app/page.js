@@ -305,6 +305,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SELLERS SECTION */}
+      <section className="suburb-strip" id="sellers" style={{borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'start'}}>
+          <div>
+            <div className="section-eyebrow" style={{marginBottom:'16px'}}>Thinking of selling?</div>
+            <h2 className="section-title" style={{marginBottom:'20px'}}>Is now the right<br />time to sell?</h2>
+            <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.8', marginBottom:'32px'}}>Market conditions vary week to week — and timing your sale to peak clearance rates can meaningfully affect your outcome. RECOMELB gives you the signals your agent will use, before you sit down with them.</p>
+            <Link href="/sellers" className="btn-primary">Check your suburb →</Link>
+          </div>
+          <div style={{display:'flex', flexDirection:'column', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
+            {[
+              { icon: '◈', title: 'Market heat indicator',   desc: 'Hot, Warm or Neutral signal for your suburb — based on live clearance rates and days on market.' },
+              { icon: '◈', title: 'Avg days on market',      desc: 'Know what a fast or slow campaign looks like so you can set realistic expectations.' },
+              { icon: '◈', title: 'Comparable sales data',   desc: '12-month rolling sales in your suburb — the same data behind any credible appraisal.' },
+              { icon: '◈', title: 'Seasonal timing guide',   desc: 'Autumn and spring historically peak for inner Melbourne. See where the current week sits.' },
+            ].map(f => (
+              <div key={f.title} style={{background:'var(--navy-mid)', padding:'24px 28px', display:'flex', gap:'16px', alignItems:'flex-start'}}>
+                <div style={{color:'var(--gold)', fontSize:'16px', marginTop:'1px', flexShrink:0}}>{f.icon}</div>
+                <div>
+                  <div style={{fontSize:'13px', fontWeight:'500', color:'var(--text-primary)', marginBottom:'4px', letterSpacing:'0.02em'}}>{f.title}</div>
+                  <div style={{fontSize:'12px', color:'var(--text-muted)', lineHeight:'1.6', fontWeight:'300'}}>{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* NEWS SECTION */}
       <section className="news-section" id="news">
         <div className="section-header">
