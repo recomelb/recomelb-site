@@ -971,6 +971,123 @@
   .hero-actions  { animation: fadeUp 0.7s ease both 0.50s; }
   .live-ticker   { animation: fadeUp 0.8s ease both 0.60s; }
 
+  /* DEAL OF THE WEEK */
+  .deal-section {
+    padding: 80px 48px;
+    border-top: 1px solid var(--navy-border);
+    background: rgba(17,24,39,0.5);
+  }
+
+  .deal-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--navy-border);
+    border: 1px solid var(--navy-border);
+    margin-top: 40px;
+  }
+
+  .deal-card-main {
+    background: var(--navy-mid);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .deal-card-main::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), var(--gold-light));
+  }
+
+  .deal-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .deal-address {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .deal-badge {
+    display: inline-block;
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.3);
+    color: #4ade80;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    margin-bottom: 28px;
+  }
+
+  .deal-why {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    font-weight: 300;
+    border-left: 2px solid var(--gold);
+    padding-left: 20px;
+    margin-bottom: 32px;
+  }
+
+  .deal-card-stats {
+    background: var(--navy-mid);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .deal-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--navy-border);
+  }
+
+  .deal-stat-row:last-child { border-bottom: none; }
+
+  .deal-stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .deal-stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  .deal-stat-value.highlight { color: var(--gold-light); }
+
+  .deal-disclaimer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 768px) {
+    .deal-section { padding: 60px 20px; }
+    .deal-card { grid-template-columns: 1fr; }
+    .deal-price { font-size: 44px; }
+  }
+
   /* HAMBURGER */
   .nav-hamburger {
     display: none;
@@ -1083,6 +1200,7 @@
   <ul class="nav-links">
     <li><a href="#residential">Residential</a></li>
     <li><a href="#commercial">Commercial</a></li>
+    <li><a href="#deal-of-week">Deal of the week</a></li>
     <li><a href="#for-you">For you</a></li>
     <li><a href="#news">News</a></li>
     <li><a href="#about">About</a></li>
@@ -1096,6 +1214,7 @@
 <div class="nav-dropdown" id="navDropdown">
   <a href="#residential" class="nav-dropdown-link">Residential</a>
   <a href="#commercial" class="nav-dropdown-link">Commercial</a>
+  <a href="#deal-of-week" class="nav-dropdown-link">Deal of the week</a>
   <a href="#for-you" class="nav-dropdown-link">For you</a>
   <a href="#news" class="nav-dropdown-link">News</a>
   <a href="#about" class="nav-dropdown-link">About</a>
@@ -1125,8 +1244,8 @@
   </p>
 
   <div class="hero-actions">
-    <a href="#residential" class="btn-primary">Explore suburbs</a>
-    <a href="#subscribe" class="btn-ghost">Get weekly digest</a>
+    <a href="#deal-of-week" class="btn-primary">Get This Week's Top Deals</a>
+    <a href="#residential" class="btn-ghost">See Melbourne's Hottest Suburbs</a>
   </div>
 
   <!-- LIVE STATS PANEL -->
@@ -1300,6 +1419,53 @@
   </div>
 </section>
 
+<!-- DEAL OF THE WEEK -->
+<section class="deal-section" id="deal-of-week">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Deal of the week · Manually curated</div>
+      <h2 class="section-title">This week's smartest buy.</h2>
+    </div>
+  </div>
+
+  <div class="deal-card">
+    <div class="deal-card-main">
+      <div class="deal-price">$580,000</div>
+      <div class="deal-address">2-bed townhouse · Fitzroy North</div>
+      <div class="deal-badge">6.4% below unit median</div>
+      <div class="deal-why">
+        Priced below the suburb unit median in one of Melbourne's most tightly held inner-north suburbs. Strong rental demand from professionals and students. Limited comparable stock under $600k.
+      </div>
+      <a href="#subscribe" class="btn-primary">View full analysis →</a>
+    </div>
+
+    <div class="deal-card-stats">
+      <div class="deal-stat-row">
+        <span class="deal-stat-label">Suburb median (house)</span>
+        <span class="deal-stat-value">$1,480,000</span>
+      </div>
+      <div class="deal-stat-row">
+        <span class="deal-stat-label">Suburb median (unit)</span>
+        <span class="deal-stat-value">$620,000</span>
+      </div>
+      <div class="deal-stat-row">
+        <span class="deal-stat-label">Est. gross rental yield</span>
+        <span class="deal-stat-value highlight">4.8%</span>
+      </div>
+      <div class="deal-stat-row">
+        <span class="deal-stat-label">12-month suburb growth</span>
+        <span class="deal-stat-value highlight">+3.2%</span>
+      </div>
+      <div class="deal-stat-row">
+        <span class="deal-stat-label">Days on market</span>
+        <span class="deal-stat-value">18 days</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="deal-disclaimer">New deal analysed every Monday. Based on publicly available data — not financial advice.</p>
+</section>
+
 <!-- AUDIENCE SECTION -->
 <section class="audience-section" id="for-you">
   <div class="audience-intro">
@@ -1313,8 +1479,8 @@
     <!-- PROPERTY SEEKERS -->
     <div class="audience-panel">
       <div class="audience-panel-label">Property seekers</div>
-      <h3 class="audience-panel-title">Stop jumping between<br>five <em>different sites.</em></h3>
-      <p class="audience-panel-sub">Buyers and renters waste hours piecing together suburb data from Domain, REA, REIV and news sites separately. RECOMELB puts everything in one place — so you can make confident decisions faster.</p>
+      <h3 class="audience-panel-title">Find the opportunity<br>before <em>everyone else does.</em></h3>
+      <p class="audience-panel-sub">Buyers and investors waste hours across Domain, REA and REIV trying to piece together whether a suburb is worth pursuing. RECOMELB tells you if a suburb is heating up, cooling down, or hiding an opportunity — before the rest of the market catches on.</p>
 
       <div class="feature-list">
         <div class="feature-item">
@@ -1353,10 +1519,19 @@
             <div class="feature-desc">12-month median price trend per suburb — so you can see whether a market is heating up or cooling before you commit.</div>
           </div>
         </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="feature-text">
+            <div class="feature-title">Undervalued property alerts</div>
+            <div class="feature-desc">Properties listed below their suburb median flagged weekly — so you see the deals worth investigating before they're gone.</div>
+          </div>
+        </div>
       </div>
 
       <div class="audience-cta-row">
-        <a href="#subscribe" class="btn-primary" style="font-size:12px; padding: 12px 24px;">Start tracking suburbs</a>
+        <a href="#subscribe" class="btn-primary" style="font-size:12px; padding: 12px 24px;">Find Undervalued Properties This Week</a>
         <div class="audience-stat"><strong>Free</strong>always</div>
       </div>
     </div>
@@ -1416,7 +1591,7 @@
       </div>
 
       <div class="audience-cta-row">
-        <a href="#subscribe" class="btn-primary" style="font-size:12px; padding: 12px 24px;">Get agent access</a>
+        <a href="#subscribe" class="btn-primary" style="font-size:12px; padding: 12px 24px;">Get Buyer Leads For Your Suburb</a>
         <div class="audience-stat"><strong>Free</strong>during beta</div>
       </div>
     </div>
@@ -1459,14 +1634,14 @@
 <!-- EMAIL SIGNUP -->
 <section class="email-section" id="subscribe">
   <div>
-    <h2 class="email-headline">The inner<br>Melbourne pulse,<br><em>every Monday.</em></h2>
-    <p class="email-sub">Residential and commercial market data, clearance rates, suburb movers and news — delivered before the week begins. No fluff, no spam.</p>
+    <h2 class="email-headline">Get Melbourne's Best Property Deals<br><em>Before Everyone Else.</em></h2>
+    <p class="email-sub">Undervalued properties, suburb trends and market intelligence — delivered every Monday morning. Free.</p>
   </div>
   <div>
     <div class="email-form">
       <input type="text" class="email-input" placeholder="First name">
       <input type="email" class="email-input" placeholder="Email address">
-      <button class="btn-primary" style="padding: 16px;">Subscribe to weekly digest</button>
+      <button class="btn-primary" style="padding: 16px;">Send Me This Week's Deals</button>
       <div class="email-promise">Published weekly · No spam · Unsubscribe any time</div>
     </div>
   </div>
