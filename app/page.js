@@ -60,8 +60,8 @@ export default function Home() {
         </p>
 
         <div className="hero-actions">
-          <a href="#deal-of-week" className="btn-primary">Get This Week&apos;s Top Deals</a>
-          <a href="#residential" className="btn-ghost">See Melbourne&apos;s Hottest Suburbs</a>
+          <Link href="/buyers" className="btn-primary">Get This Week&apos;s Top Deals</Link>
+          <Link href="/residential" className="btn-ghost">See Melbourne&apos;s Hottest Suburbs</Link>
         </div>
 
         {/* LIVE STATS PANEL */}
@@ -112,7 +112,7 @@ export default function Home() {
             <div className="section-eyebrow">Residential · Inner ring</div>
             <h2 className="section-title">Suburb market snapshot</h2>
           </div>
-          <a href="#" className="section-link">View all suburbs →</a>
+          <Link href="/residential" className="section-link">View all suburbs →</Link>
         </div>
         <div className="suburb-grid">
           <div className="suburb-card">
@@ -173,7 +173,7 @@ export default function Home() {
             <div className="section-eyebrow">Commercial · Inner Melbourne</div>
             <h2 className="section-title">Commercial market snapshot</h2>
           </div>
-          <a href="#" className="section-link">View all precincts →</a>
+          <Link href="/commercial" className="section-link">View all precincts →</Link>
         </div>
         <div className="commercial-grid">
           <div className="commercial-card">
@@ -337,7 +337,7 @@ export default function Home() {
               </div>
             </div>
             <div className="audience-cta-row">
-              <a href="#subscribe" className="btn-primary" style={{fontSize:'12px', padding:'12px 24px'}}>Find Undervalued Properties This Week</a>
+              <Link href="/buyers" className="btn-primary" style={{fontSize:'12px', padding:'12px 24px'}}>Find Undervalued Properties This Week</Link>
               <div className="audience-stat"><strong>Free</strong>always</div>
             </div>
           </div>
@@ -395,7 +395,7 @@ export default function Home() {
               </div>
             </div>
             <div className="audience-cta-row">
-              <a href="#subscribe" className="btn-primary" style={{fontSize:'12px', padding:'12px 24px'}}>Get Buyer Leads For Your Suburb</a>
+              <Link href="/agents" className="btn-primary" style={{fontSize:'12px', padding:'12px 24px'}}>Get Buyer Leads For Your Suburb</Link>
               <div className="audience-stat"><strong>Free</strong>during beta</div>
             </div>
           </div>

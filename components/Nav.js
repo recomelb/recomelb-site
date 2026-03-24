@@ -13,8 +13,9 @@ export default function Nav() {
         <ul className="nav-links">
           <li><Link href="/residential">Residential</Link></li>
           <li><Link href="/commercial">Commercial</Link></li>
-          <li><Link href="/#deal-of-week">Deal of the week</Link></li>
-          <li><Link href="/#for-you">For you</Link></li>
+          <li><Link href="/buyers">Buyers</Link></li>
+          <li><Link href="/sellers">Sellers</Link></li>
+          <li><Link href="/agents">Agents</Link></li>
           <li><Link href="/blog">News</Link></li>
           <li><Link href="/about">About</Link></li>
         </ul>
@@ -31,8 +32,9 @@ export default function Nav() {
       <div className={`nav-dropdown${open ? ' open' : ''}`}>
         <Link href="/residential" onClick={close}>Residential</Link>
         <Link href="/commercial" onClick={close}>Commercial</Link>
-        <Link href="/#deal-of-week" onClick={close}>Deal of the week</Link>
-        <Link href="/#for-you" onClick={close}>For you</Link>
+        <Link href="/buyers" onClick={close}>Buyers</Link>
+        <Link href="/sellers" onClick={close}>Sellers</Link>
+        <Link href="/agents" onClick={close}>Agents</Link>
         <Link href="/blog" onClick={close}>News</Link>
         <Link href="/about" onClick={close}>About</Link>
         <Link href="/#subscribe" onClick={close}>Weekly digest</Link>
