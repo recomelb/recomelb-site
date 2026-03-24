@@ -176,44 +176,6 @@
     transition: opacity 0.3s;
   }
 
-  /* PROPERTY TYPE TOGGLE */
-  .type-toggle {
-    display: inline-flex;
-    border: 1px solid var(--navy-border);
-    margin-bottom: 32px;
-    position: relative;
-  }
-
-  .type-toggle-btn {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 10px 28px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 400;
-    transition: color 0.25s;
-    position: relative;
-    z-index: 1;
-  }
-
-  .type-toggle-btn.active { color: var(--navy); }
-
-  .type-toggle-indicator {
-    position: absolute;
-    top: 0; left: 0;
-    height: 100%;
-    width: 50%;
-    background: var(--gold);
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    z-index: 0;
-  }
-
-  .type-toggle-indicator.commercial { transform: translateX(100%); }
-
   .hero-actions { display: flex; gap: 16px; align-items: center; }
 
   .btn-primary {
@@ -598,10 +560,6 @@
     text-transform: none;
     margin-top: 2px;
   }
-
-  /* SECTION VISIBILITY */
-  .data-section { display: none; }
-  .data-section.visible { display: block; }
 
   /* AUDIENCE SECTION */
   .audience-section {
@@ -1008,9 +966,8 @@
   .hero-eyebrow  { animation: fadeUp 0.6s ease both 0.15s; }
   .hero-headline { animation: fadeUp 0.7s ease both 0.28s; }
   .hero-sub      { animation: fadeUp 0.7s ease both 0.42s; }
-  .type-toggle   { animation: fadeUp 0.7s ease both 0.50s; }
-  .hero-actions  { animation: fadeUp 0.7s ease both 0.56s; }
-  .live-ticker   { animation: fadeUp 0.8s ease both 0.65s; }
+  .hero-actions  { animation: fadeUp 0.7s ease both 0.50s; }
+  .live-ticker   { animation: fadeUp 0.8s ease both 0.60s; }
 </style>
 </head>
 <body>
@@ -1019,8 +976,8 @@
 <nav>
   <a href="#" class="nav-logo">RECO<span>MELB</span></a>
   <ul class="nav-links">
-    <li><a href="#" onclick="navSwitch('residential'); return false;">Residential</a></li>
-    <li><a href="#" onclick="navSwitch('commercial'); return false;">Commercial</a></li>
+    <li><a href="#residential">Residential</a></li>
+    <li><a href="#commercial">Commercial</a></li>
     <li><a href="#for-you">For you</a></li>
     <li><a href="#news">News</a></li>
     <li><a href="#about">About</a></li>
@@ -1033,31 +990,25 @@
   <div class="hero-bg-line"></div>
 
   <div class="brand-name">
-    <span id="brand-res" class="brand-active">Residential</span>
+    <span class="brand-active">Residential</span>
     <span class="brand-sep">·</span>
-    <span id="brand-com">Commercial</span>
+    <span class="brand-active">Commercial</span>
     <span class="brand-sep">·</span>
     <span>Melbourne</span>
   </div>
 
-  <div class="hero-eyebrow" id="hero-eyebrow">Melbourne property intelligence</div>
+  <div class="hero-eyebrow">Melbourne property intelligence</div>
 
-  <h1 class="hero-headline" id="hero-headline">
+  <h1 class="hero-headline">
     The inner city<br>market, <em>clearly</em><br>understood.
   </h1>
 
-  <p class="hero-sub" id="hero-sub">
+  <p class="hero-sub">
     Real-time suburb data, auction results and market intelligence for Melbourne's inner ring. Updated every Monday.
   </p>
 
-  <div class="type-toggle" id="typeToggle">
-    <div class="type-toggle-indicator" id="toggleIndicator"></div>
-    <button class="type-toggle-btn active" id="btnRes" onclick="switchType('residential')">Residential</button>
-    <button class="type-toggle-btn" id="btnCom" onclick="switchType('commercial')">Commercial</button>
-  </div>
-
   <div class="hero-actions">
-    <a href="#residential" class="btn-primary" id="hero-cta">Explore suburbs</a>
+    <a href="#residential" class="btn-primary">Explore suburbs</a>
     <a href="#subscribe" class="btn-ghost">Get weekly digest</a>
   </div>
 
@@ -1105,7 +1056,7 @@
 </section>
 
 <!-- RESIDENTIAL SECTION -->
-<section class="suburb-strip data-section visible" id="residential">
+<section class="suburb-strip" id="residential">
   <div class="section-header">
     <div>
       <div class="section-eyebrow">Residential · Inner ring</div>
@@ -1167,7 +1118,7 @@
 </section>
 
 <!-- COMMERCIAL SECTION -->
-<section class="suburb-strip data-section" id="commercial">
+<section class="suburb-strip" id="commercial">
   <div class="section-header">
     <div>
       <div class="section-eyebrow">Commercial · Inner Melbourne</div>
@@ -1456,71 +1407,7 @@
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const data = {
-    residential: {
-      rate: 74, label: 'Auction clearance rate', date: 'Inner Melbourne · Sat 15 Mar',
-      ms1: '312', ms1l: 'Auctions held', ms2: '$1.42M', ms2l: 'Median sale',
-      ms3: '23', ms3l: 'Days on market', ms4: '4.2%', ms4l: 'Rental yield avg',
-      headline: 'The inner city<br>market, <em>clearly</em><br>understood.',
-      sub: 'Real-time suburb data, auction results and market intelligence for Melbourne\'s inner ring. Updated every Monday.',
-      eyebrow: 'Residential property intelligence',
-      cta: 'Explore suburbs', ctaHref: '#residential'
-    },
-    commercial: {
-      rate: 68, label: 'Commercial leasing activity', date: 'CBD & inner fringe · Q1 2025',
-      ms1: '6.8%', ms1l: 'Avg net yield', ms2: '$680/m²', ms2l: 'CBD office rent',
-      ms3: '11.2%', ms3l: 'Office vacancy', ms4: '3.1%', ms4l: 'Industrial vacancy',
-      headline: 'The commercial<br>market, <em>data</em><br>driven.',
-      sub: 'Office, retail and industrial market intelligence across Melbourne\'s inner precincts. Updated every Monday.',
-      eyebrow: 'Commercial property intelligence',
-      cta: 'Explore precincts', ctaHref: '#commercial'
-    }
-  };
-
-  let current = 'residential';
   let countTimer = null;
-
-  function navSwitch(type) {
-    switchType(type);
-    document.getElementById(type).scrollIntoView({behavior: 'smooth'});
-  }
-
-  function switchType(type) {
-    if (type === current) return;
-    current = type;
-
-    const d = data[type];
-    const isCommercial = type === 'commercial';
-
-    document.getElementById('toggleIndicator').classList.toggle('commercial', isCommercial);
-    document.getElementById('btnRes').classList.toggle('active', !isCommercial);
-    document.getElementById('btnCom').classList.toggle('active', isCommercial);
-
-    document.getElementById('brand-res').classList.toggle('brand-active', !isCommercial);
-    document.getElementById('brand-com').classList.toggle('brand-active', isCommercial);
-
-    document.getElementById('hero-eyebrow').textContent = d.eyebrow;
-    document.getElementById('hero-headline').innerHTML = d.headline;
-    document.getElementById('hero-sub').textContent = d.sub;
-    document.getElementById('hero-cta').textContent = d.cta;
-    document.getElementById('hero-cta').href = d.ctaHref;
-
-    document.getElementById('stat-label').textContent = d.label;
-    document.getElementById('stat-date').textContent = d.date;
-    document.getElementById('ms1').textContent = d.ms1;
-    document.getElementById('ms1l').textContent = d.ms1l;
-    document.getElementById('ms2').textContent = d.ms2;
-    document.getElementById('ms2l').textContent = d.ms2l;
-    document.getElementById('ms3').textContent = d.ms3;
-    document.getElementById('ms3l').textContent = d.ms3l;
-    document.getElementById('ms4').textContent = d.ms4;
-    document.getElementById('ms4l').textContent = d.ms4l;
-
-    animateCount(d.rate, type === 'commercial' ? '%' : '%');
-
-    document.getElementById('residential').classList.toggle('visible', !isCommercial);
-    document.getElementById('commercial').classList.toggle('visible', isCommercial);
-  }
 
   function animateCount(target, suffix) {
     if (countTimer) clearInterval(countTimer);
@@ -1539,4 +1426,12 @@
   const obs = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) {
-        e.target.style.animation = `fadeUp 0.5s ease both ${i *
+        e.target.style.animation = `fadeUp 0.5s ease both ${i * 0.07}s`;
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  cards.forEach(c => obs.observe(c));
+</script>
+</body>
+</html>
