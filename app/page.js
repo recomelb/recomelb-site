@@ -275,130 +275,33 @@ export default function Home() {
         <p className="deal-disclaimer">New deal analysed every Monday. Based on publicly available data — not financial advice.</p>
       </section>
 
-      {/* AUDIENCE SECTION */}
-      <section className="audience-section" id="for-you">
-        <div className="audience-intro">
-          <div className="section-eyebrow">Built for two audiences</div>
-          <h2 className="section-title">Whether you&apos;re searching<br />or selling, <em style={{fontStyle:'italic', color:'var(--gold-light)'}}>we&apos;ve got you.</em></h2>
-          <p>RECOMELB is purpose-built for the two groups who need Melbourne property data most — and what we give each of them is very different.</p>
+      {/* SIGNPOST SECTION */}
+      <section className="suburb-strip" id="for-you">
+        <div className="section-header">
+          <div>
+            <div className="section-eyebrow">Where do you fit?</div>
+            <h2 className="section-title">Find what&apos;s built for you.</h2>
+          </div>
         </div>
-        <div className="audience-grid">
-
-          {/* PROPERTY SEEKERS */}
-          <div className="audience-panel">
-            <div className="audience-panel-label">Property seekers</div>
-            <h3 className="audience-panel-title">Find the opportunity<br />before <em>everyone else does.</em></h3>
-            <p className="audience-panel-sub">Buyers and investors waste hours across Domain, REA and REIV trying to piece together whether a suburb is worth pursuing. RECOMELB tells you if a suburb is heating up, cooling down, or hiding an opportunity — before the rest of the market catches on.</p>
-            <div className="feature-list">
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 16l4.553-2.276A1 1 0 0021 19.382V8.618a1 1 0 00-.553-.894L15 5m0 18V5m0 0L9 7"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Suburb comparison tool</div>
-                  <div className="feature-desc">Compare up to 3 suburbs side by side — medians, clearance rates, days on market and yield, all in one view.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Suburb watchlist</div>
-                  <div className="feature-desc">Save the suburbs you&apos;re tracking. Get notified when median prices shift or clearance rates move significantly.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Tailored weekly digest</div>
-                  <div className="feature-desc">Subscribe with your target suburbs. Each Monday you get a personalised market update — just the data that matters to you.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Price trend charts</div>
-                  <div className="feature-desc">12-month median price trend per suburb — so you can see whether a market is heating up or cooling before you commit.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Undervalued property alerts</div>
-                  <div className="feature-desc">Properties listed below their suburb median flagged weekly — so you see the deals worth investigating before they&apos;re gone.</div>
-                </div>
-              </div>
-            </div>
-            <div className="audience-cta-row">
-              <Link href="/buyers" className="btn-primary" style={{fontSize:'12px', padding:'12px 24px'}}>Find Undervalued Properties This Week</Link>
-              <div className="audience-stat"><strong>Free</strong>always</div>
-            </div>
-          </div>
-
-          {/* REAL ESTATE AGENTS */}
-          <div className="audience-panel">
-            <div className="audience-panel-label">Real estate agents</div>
-            <h3 className="audience-panel-title">Your weekly market prep,<br /><em>already done.</em></h3>
-            <p className="audience-panel-sub">Agents spend hours every week manually pulling suburb data for appraisals, client updates and pitch decks. RECOMELB automates that — giving you a professional, always-current data toolkit you can share directly with clients.</p>
-            <div className="feature-list">
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Shareable suburb reports</div>
-                  <div className="feature-desc">Generate a clean, branded PDF or shareable link for any suburb — ready to send to vendors or buyers in seconds.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Market appraisal data support</div>
-                  <div className="feature-desc">Current median, comparable sales context and quarterly trend — the data layer behind every credible appraisal conversation.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Weekly client summary</div>
-                  <div className="feature-desc">A pre-written, data-backed market summary every Monday — forward it to your client list or use it as the base for your own newsletter.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Commercial vacancy tracker</div>
-                  <div className="feature-desc">Inner Melbourne office, retail and industrial vacancy rates updated weekly — essential context for commercial leasing pitches.</div>
-                </div>
-              </div>
-              <div className="feature-item">
-                <div className="feature-icon">
-                  <svg viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                </div>
-                <div className="feature-text">
-                  <div className="feature-title">Buyer lead capture</div>
-                  <div className="feature-desc">Buyers register interest directly on RECOMELB. Leads are captured with suburb preference and budget — passed to agents in the relevant area.</div>
-                </div>
-              </div>
-            </div>
-            <div className="audience-cta-row">
-              <Link href="/agents" className="btn-primary" style={{fontSize:'12px', padding:'12px 24px'}}>Get Buyer Leads For Your Suburb</Link>
-              <div className="audience-stat"><strong>Free</strong>during beta</div>
-            </div>
-          </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
+          <Link href="/buyers" style={{display:'block', background:'var(--navy-mid)', padding:'48px 36px', textDecoration:'none', transition:'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='var(--navy-dark)'} onMouseLeave={e => e.currentTarget.style.background='var(--navy-mid)'}>
+            <div style={{fontSize:'10px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'20px'}}>Buyers &amp; Renters</div>
+            <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'28px', fontWeight:'300', color:'var(--text-primary)', lineHeight:'1.2', marginBottom:'16px'}}>I&apos;m looking to<br />buy or rent.</div>
+            <div style={{fontSize:'13px', color:'var(--text-muted)', lineHeight:'1.6', marginBottom:'28px'}}>Suburb comparisons, undervalued alerts, clearance rates and weekly deal intelligence — so you find the right property before everyone else does.</div>
+            <div style={{color:'var(--gold)', fontSize:'13px', letterSpacing:'0.06em'}}>Explore buyer tools →</div>
+          </Link>
+          <Link href="/sellers" style={{display:'block', background:'var(--navy-mid)', padding:'48px 36px', textDecoration:'none', transition:'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='var(--navy-dark)'} onMouseLeave={e => e.currentTarget.style.background='var(--navy-mid)'}>
+            <div style={{fontSize:'10px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'20px'}}>Vendors</div>
+            <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'28px', fontWeight:'300', color:'var(--text-primary)', lineHeight:'1.2', marginBottom:'16px'}}>I&apos;m selling my<br />property.</div>
+            <div style={{fontSize:'13px', color:'var(--text-muted)', lineHeight:'1.6', marginBottom:'28px'}}>Market timing signals, suburb heat indicators and appraisal data context — so you know exactly when conditions favour a sale.</div>
+            <div style={{color:'var(--gold)', fontSize:'13px', letterSpacing:'0.06em'}}>See seller intelligence →</div>
+          </Link>
+          <Link href="/agents" style={{display:'block', background:'var(--navy-mid)', padding:'48px 36px', textDecoration:'none', transition:'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='var(--navy-dark)'} onMouseLeave={e => e.currentTarget.style.background='var(--navy-mid)'}>
+            <div style={{fontSize:'10px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'20px'}}>Agents</div>
+            <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'28px', fontWeight:'300', color:'var(--text-primary)', lineHeight:'1.2', marginBottom:'16px'}}>I&apos;m a real estate<br />agent.</div>
+            <div style={{fontSize:'13px', color:'var(--text-muted)', lineHeight:'1.6', marginBottom:'28px'}}>Shareable suburb reports, weekly client summaries, commercial vacancy data and direct buyer leads — your market prep, already done.</div>
+            <div style={{color:'var(--gold)', fontSize:'13px', letterSpacing:'0.06em'}}>Access agent tools →</div>
+          </Link>
         </div>
       </section>
 

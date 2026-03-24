@@ -16,8 +16,8 @@ export default function Nav() {
           <li><Link href="/buyers">Buyers</Link></li>
           <li><Link href="/sellers">Sellers</Link></li>
           <li><Link href="/agents">Agents</Link></li>
-          <li><Link href="/blog">News</Link></li>
-          <li><Link href="/about">About</Link></li>
+          <li><Link href="/blog">Blog</Link></li>
+          <li><Link href="/about">Founder</Link></li>
         </ul>
         <Link href="/#subscribe" className="nav-cta">Weekly digest</Link>
         <button
@@ -35,8 +35,8 @@ export default function Nav() {
         <Link href="/buyers" onClick={close}>Buyers</Link>
         <Link href="/sellers" onClick={close}>Sellers</Link>
         <Link href="/agents" onClick={close}>Agents</Link>
-        <Link href="/blog" onClick={close}>News</Link>
-        <Link href="/about" onClick={close}>About</Link>
+        <Link href="/blog" onClick={close}>Blog</Link>
+        <Link href="/about" onClick={close}>Founder</Link>
         <Link href="/#subscribe" onClick={close}>Weekly digest</Link>
       </div>
     </>

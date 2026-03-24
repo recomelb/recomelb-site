@@ -1,4 +1,4 @@
-export const metadata = { title: 'About — RECOMELB' }
+export const metadata = { title: 'Founder — RECOMELB' }
 
 const HOW_IT_WORKS = [
   { num: '01', title: 'Data is collected', desc: 'Public auction results, listing data and vacancy figures are pulled every week from authoritative Melbourne property sources.' },
