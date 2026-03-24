@@ -15,9 +15,17 @@ const suburbs = [
   { name: 'South Yarra',   type: 'House', location: 'Inner East',  tag: 'Blue chip',   median: '$1.68M', clearance: 78, dom: 18, change: '+3.9%', up: true,  trend: [1.46,1.49,1.52,1.55,1.57,1.60,1.62,1.63,1.65,1.66,1.67,1.68] },
 ]
 
+const LISTING_SUBURBS = [
+  { label: 'Fitzroy',    src: 'https://www.domain.com.au/sale/?suburb=fitzroy,3065&excludedeposittaken=1' },
+  { label: 'Collingwood',src: 'https://www.domain.com.au/sale/?suburb=collingwood,3066&excludedeposittaken=1' },
+  { label: 'Richmond',   src: 'https://www.domain.com.au/sale/?suburb=richmond,3121&excludedeposittaken=1' },
+  { label: 'Northcote',  src: 'https://www.domain.com.au/sale/?suburb=northcote,3070&excludedeposittaken=1' },
+]
+
 export default function ResidentialPage() {
   const [filter, setFilter] = useState('All')
   const [search, setSearch] = useState('')
+  const [listingSrc, setListingSrc] = useState(LISTING_SUBURBS[0].src)
 
   const visible = suburbs.filter(s => {
     const matchType = filter === 'All' || s.type === filter
@@ -79,6 +87,34 @@ export default function ResidentialPage() {
             <div style={{padding:'40px', color:'var(--text-muted)', gridColumn:'1/-1'}}>No suburbs match your search.</div>
           )}
         </div>
+      </section>
+
+      {/* ACTIVE LISTINGS EMBED */}
+      <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}}>
+        <div className="section-header">
+          <div>
+            <div className="section-eyebrow">Browse active listings</div>
+            <h2 className="section-title">Active listings in inner Melbourne</h2>
+          </div>
+        </div>
+        <div className="filter-tabs" style={{marginBottom:'24px'}}>
+          {LISTING_SUBURBS.map(s => (
+            <button
+              key={s.label}
+              className={`filter-tab${listingSrc === s.src ? ' active' : ''}`}
+              onClick={() => setListingSrc(s.src)}
+            >{s.label}</button>
+          ))}
+        </div>
+        <iframe
+          src={listingSrc}
+          width="100%"
+          height="600"
+          frameBorder="0"
+          style={{border:'1px solid var(--navy-border)', display:'block'}}
+          title="Domain property listings"
+        />
+        <p style={{marginTop:'12px', fontSize:'11px', color:'var(--text-muted)'}}>Listings powered by Domain</p>
       </section>
 
       {/* CTA */}

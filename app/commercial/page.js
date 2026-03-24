@@ -1,6 +1,13 @@
 'use client'
 import { useState } from 'react'
 
+const COMMERCIAL_SUBURBS = [
+  { label: 'CBD',           src: 'https://www.domain.com.au/commercial/for-lease/?suburb=melbourne,3000' },
+  { label: 'Fitzroy',       src: 'https://www.domain.com.au/commercial/for-lease/?suburb=fitzroy,3065' },
+  { label: 'Collingwood',   src: 'https://www.domain.com.au/commercial/for-lease/?suburb=collingwood,3066' },
+  { label: 'Port Melbourne', src: 'https://www.domain.com.au/commercial/for-lease/?suburb=port-melbourne,3207' },
+]
+
 const precincts = [
   { name: 'CBD Core',       sub: 'Collins St precinct',    type: 'Office',    yield: '6.8%', vacancy: '11.2%', rent: '$680/m²', change: '+0.4%', up: true,  bar: 68 },
   { name: 'Fitzroy',        sub: 'Brunswick St strip',     type: 'Retail',    yield: '5.4%', vacancy: '7.8%',  rent: '$420/m²', change: '+0.6%', up: true,  bar: 54 },
@@ -14,6 +21,7 @@ const TYPES = ['All', 'Office', 'Retail', 'Industrial', 'Mixed']
 
 export default function CommercialPage() {
   const [filter, setFilter] = useState('All')
+  const [listingSrc, setListingSrc] = useState(COMMERCIAL_SUBURBS[0].src)
 
   const visible = filter === 'All' ? precincts : precincts.filter(p => p.type === filter)
 
@@ -76,6 +84,34 @@ export default function CommercialPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ACTIVE LISTINGS EMBED */}
+      <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}}>
+        <div className="section-header">
+          <div>
+            <div className="section-eyebrow">Browse active listings</div>
+            <h2 className="section-title">Commercial listings in inner Melbourne</h2>
+          </div>
+        </div>
+        <div className="filter-tabs" style={{marginBottom:'24px'}}>
+          {COMMERCIAL_SUBURBS.map(s => (
+            <button
+              key={s.label}
+              className={`filter-tab${listingSrc === s.src ? ' active' : ''}`}
+              onClick={() => setListingSrc(s.src)}
+            >{s.label}</button>
+          ))}
+        </div>
+        <iframe
+          src={listingSrc}
+          width="100%"
+          height="600"
+          frameBorder="0"
+          style={{border:'1px solid var(--navy-border)', display:'block'}}
+          title="Domain commercial listings"
+        />
+        <p style={{marginTop:'12px', fontSize:'11px', color:'var(--text-muted)'}}>Listings powered by Domain</p>
       </section>
 
       {/* CTA */}
