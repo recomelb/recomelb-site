@@ -1,8 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SuburbChart from '@/components/SuburbChart'
 
-const suburbs = [
+const STATIC_SUBURBS = [
   { name: 'Fitzroy',       type: 'House', location: 'Inner North', tag: 'High demand',  median: '$1.48M', clearance: 74, dom: 22, change: '+3.2%', up: true,  trend: [1.28,1.30,1.33,1.35,1.38,1.40,1.41,1.43,1.44,1.46,1.47,1.48] },
   { name: 'Collingwood',   type: 'House', location: 'Inner North', tag: 'Rising fast',  median: '$1.39M', clearance: 79, dom: 19, change: '+4.1%', up: true,  trend: [1.18,1.20,1.23,1.25,1.28,1.30,1.32,1.34,1.36,1.37,1.38,1.39] },
   { name: 'Richmond',      type: 'House', location: 'Inner East',  tag: 'Dual appeal', median: '$1.52M', clearance: 72, dom: 24, change: '+2.8%', up: true,  trend: [1.36,1.38,1.40,1.42,1.43,1.45,1.47,1.48,1.49,1.50,1.51,1.52] },
@@ -26,6 +26,15 @@ export default function ResidentialPage() {
   const [filter, setFilter] = useState('All')
   const [search, setSearch] = useState('')
   const [listingSrc, setListingSrc] = useState(LISTING_SUBURBS[0].src)
+  const [suburbs, setSuburbs] = useState(STATIC_SUBURBS)
+  const [sheetLoaded, setSheetLoaded] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/suburbs')
+      .then(r => r.json())
+      .then(data => { setSheetLoaded(true); if (data.length > 0) setSuburbs(data) })
+      .catch(() => setSheetLoaded(true))
+  }, [])
 
   const visible = suburbs.filter(s => {
     const matchType = filter === 'All' || s.type === filter
@@ -80,10 +89,13 @@ export default function ResidentialPage() {
                 <div className="suburb-meta-item">Clearance<span>{s.clearance}%</span></div>
               </div>
               <div className="suburb-bar-wrap"><div className="suburb-bar" style={{width:`${s.clearance}%`}}></div></div>
-              <SuburbChart data={s.trend} />
+              {s.trend && s.trend.length > 0 && <SuburbChart data={s.trend} />}
             </div>
           ))}
-          {visible.length === 0 && (
+          {visible.length === 0 && sheetLoaded && suburbs.length === 0 && (
+            <div style={{padding:'60px', color:'var(--text-muted)', gridColumn:'1/-1', textAlign:'center'}}>Suburb data coming soon.</div>
+          )}
+          {visible.length === 0 && suburbs.length > 0 && (
             <div style={{padding:'40px', color:'var(--text-muted)', gridColumn:'1/-1'}}>No suburbs match your search.</div>
           )}
         </div>

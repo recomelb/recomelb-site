@@ -1,8 +1,29 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
+const STATIC_DEAL = {
+  price:       '$580,000',
+  address:     '2-bed townhouse · Fitzroy North',
+  badge:       '6.4% below unit median',
+  why:         "Priced below the suburb unit median in one of Melbourne's most tightly held inner-north suburbs. Strong rental demand from professionals and students. Limited comparable stock under $600k.",
+  medianHouse: '$1,480,000',
+  medianUnit:  '$620,000',
+  yield:       '4.8%',
+  growth:      '+3.2%',
+  dom:         '18 days',
+}
+
 export default function Home() {
+  const [deal, setDeal] = useState(STATIC_DEAL)
+
+  useEffect(() => {
+    fetch('/api/deal')
+      .then(r => r.json())
+      .then(data => { if (data) setDeal(data) })
+      .catch(() => {})
+  }, [])
+
   useEffect(() => {
     let countTimer = null
     function animateCount(target, suffix) {
@@ -241,34 +262,32 @@ export default function Home() {
         </div>
         <div className="deal-card">
           <div className="deal-card-main">
-            <div className="deal-price">$580,000</div>
-            <div className="deal-address">2-bed townhouse · Fitzroy North</div>
-            <div className="deal-badge">6.4% below unit median</div>
-            <div className="deal-why">
-              Priced below the suburb unit median in one of Melbourne&apos;s most tightly held inner-north suburbs. Strong rental demand from professionals and students. Limited comparable stock under $600k.
-            </div>
+            <div className="deal-price">{deal.price}</div>
+            <div className="deal-address">{deal.address}</div>
+            <div className="deal-badge">{deal.badge}</div>
+            <div className="deal-why">{deal.why}</div>
             <a href="#subscribe" className="btn-primary">View full analysis →</a>
           </div>
           <div className="deal-card-stats">
             <div className="deal-stat-row">
               <span className="deal-stat-label">Suburb median (house)</span>
-              <span className="deal-stat-value">$1,480,000</span>
+              <span className="deal-stat-value">{deal.medianHouse}</span>
             </div>
             <div className="deal-stat-row">
               <span className="deal-stat-label">Suburb median (unit)</span>
-              <span className="deal-stat-value">$620,000</span>
+              <span className="deal-stat-value">{deal.medianUnit}</span>
             </div>
             <div className="deal-stat-row">
               <span className="deal-stat-label">Est. gross rental yield</span>
-              <span className="deal-stat-value highlight">4.8%</span>
+              <span className="deal-stat-value highlight">{deal.yield}</span>
             </div>
             <div className="deal-stat-row">
               <span className="deal-stat-label">12-month suburb growth</span>
-              <span className="deal-stat-value highlight">+3.2%</span>
+              <span className="deal-stat-value highlight">{deal.growth}</span>
             </div>
             <div className="deal-stat-row">
               <span className="deal-stat-label">Days on market</span>
-              <span className="deal-stat-value">18 days</span>
+              <span className="deal-stat-value">{deal.dom}</span>
             </div>
           </div>
         </div>

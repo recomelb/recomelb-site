@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-const ARTICLES = [
+const STATIC_ARTICLES = [
   {
     tag: 'Market Update', category: 'Residential',
     title: 'Inner north clearance rates hold above 70% for sixth consecutive week',
@@ -44,8 +44,17 @@ const CATS = ['All', 'Residential', 'Commercial', 'Rate Watch', 'Analysis']
 
 export default function BlogPage() {
   const [cat, setCat] = useState('All')
+  const [articles, setArticles] = useState(STATIC_ARTICLES)
+  const [sheetLoaded, setSheetLoaded] = useState(false)
 
-  const visible = cat === 'All' ? ARTICLES : ARTICLES.filter(a => a.category === cat)
+  useEffect(() => {
+    fetch('/api/blog')
+      .then(r => r.json())
+      .then(data => { setSheetLoaded(true); if (data.length > 0) setArticles(data) })
+      .catch(() => setSheetLoaded(true))
+  }, [])
+
+  const visible = cat === 'All' ? articles : articles.filter(a => a.category === cat)
 
   return (
     <>
@@ -88,7 +97,10 @@ export default function BlogPage() {
               </div>
             </div>
           ))}
-          {visible.length === 0 && (
+          {visible.length === 0 && sheetLoaded && articles.length === 0 && (
+            <div style={{padding:'48px', color:'var(--text-muted)', gridColumn:'1/-1'}}>Articles coming soon.</div>
+          )}
+          {visible.length === 0 && articles.length > 0 && (
             <div style={{padding:'48px', color:'var(--text-muted)', gridColumn:'1/-1'}}>No articles in this category yet.</div>
           )}
         </div>

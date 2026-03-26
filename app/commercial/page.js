@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const COMMERCIAL_SUBURBS = [
   { label: 'CBD',           src: 'https://www.domain.com.au/commercial/for-lease/?suburb=melbourne,3000' },
@@ -8,7 +8,7 @@ const COMMERCIAL_SUBURBS = [
   { label: 'Port Melbourne', src: 'https://www.domain.com.au/commercial/for-lease/?suburb=port-melbourne,3207' },
 ]
 
-const precincts = [
+const STATIC_PRECINCTS = [
   { name: 'CBD Core',       sub: 'Collins St precinct',    type: 'Office',    yield: '6.8%', vacancy: '11.2%', rent: '$680/m²', change: '+0.4%', up: true,  bar: 68 },
   { name: 'Fitzroy',        sub: 'Brunswick St strip',     type: 'Retail',    yield: '5.4%', vacancy: '7.8%',  rent: '$420/m²', change: '+0.6%', up: true,  bar: 54 },
   { name: 'Port Melbourne', sub: 'Inner west logistics',   type: 'Industrial',yield: '5.9%', vacancy: '3.1%',  rent: '$195/m²', change: '+1.2%', up: true,  bar: 59 },
@@ -22,6 +22,15 @@ const TYPES = ['All', 'Office', 'Retail', 'Industrial', 'Mixed']
 export default function CommercialPage() {
   const [filter, setFilter] = useState('All')
   const [listingSrc, setListingSrc] = useState(COMMERCIAL_SUBURBS[0].src)
+  const [precincts, setPrecincts] = useState(STATIC_PRECINCTS)
+  const [sheetLoaded, setSheetLoaded] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/commercial')
+      .then(r => r.json())
+      .then(data => { setSheetLoaded(true); if (data.length > 0) setPrecincts(data) })
+      .catch(() => setSheetLoaded(true))
+  }, [])
 
   const visible = filter === 'All' ? precincts : precincts.filter(p => p.type === filter)
 
@@ -50,6 +59,9 @@ export default function CommercialPage() {
         </div>
 
         <div className="commercial-grid" style={{gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))'}}>
+          {sheetLoaded && precincts.length === 0 && (
+            <div style={{padding:'60px', color:'var(--text-muted)', gridColumn:'1/-1', textAlign:'center'}}>Commercial data coming soon.</div>
+          )}
           {visible.map(p => (
             <div className="commercial-card" key={p.name}>
               <span className="commercial-type-badge">{p.type}</span>
