@@ -49,6 +49,9 @@ export default function ResidentialPage() {
         <div className="page-hero-eyebrow">Residential · Inner ring · Live data</div>
         <h1 className="page-hero-headline">Melbourne residential<br /><em>market snapshot.</em></h1>
         <p className="page-hero-sub">Auction clearance rates, median prices and 12-month price trends for Melbourne&apos;s most-watched inner suburbs. Updated every Monday.</p>
+        <p style={{fontSize:'11px', color:'var(--text-muted)', letterSpacing:'0.06em', marginTop:'4px'}}>
+          Last updated {new Date().toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' })}
+        </p>
         <div className="search-bar-wrap">
           <input
             className="search-bar"
@@ -81,7 +84,7 @@ export default function ResidentialPage() {
             <div className="suburb-card" key={s.name}>
               <span className="suburb-tag">{s.type}</span>
               <div className="suburb-name">{s.name}</div>
-              <div className="suburb-type">{s.location} · {s.tag}</div>
+              <div className="suburb-type">{s.location} · <span style={{textTransform:'none'}}>{s.tag}</span></div>
               <div className="suburb-price">{s.median}</div>
               <div className={`suburb-change ${s.up ? 'up' : 'down'}`}>{s.up ? '↑' : '↓'} {s.change} this quarter</div>
               <div className="suburb-meta">
