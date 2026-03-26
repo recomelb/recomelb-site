@@ -239,7 +239,7 @@ export default function AgentsPage() {
             </div>
             <select
               className="select-input"
-              style={{ width: '260px' }}
+              style={{ width: '260px', maxWidth: '100%' }}
               value={reportName}
               onChange={e => setReportName(e.target.value)}
             >
@@ -475,6 +475,7 @@ export default function AgentsPage() {
             <h2 className="section-title">Commercial market data.</h2>
           </div>
         </div>
+        <div className="table-scroll">
         <table className="heat-table">
           <thead>
             <tr>
@@ -505,6 +506,7 @@ export default function AgentsPage() {
             ))}
           </tbody>
         </table>
+        </div>
         <p style={{ marginTop: '16px', fontSize: '11px', color: 'var(--text-muted)' }}>
           Based on publicly available commercial leasing data, updated quarterly. Not financial advice.
         </p>

@@ -137,6 +137,7 @@ export default function SellersPage() {
           ))}
         </div>
 
+        <div className="table-scroll">
         <table className="heat-table">
           <thead>
             <tr>
@@ -182,6 +183,7 @@ export default function SellersPage() {
             })}
           </tbody>
         </table>
+        </div>
         <p style={{ marginTop: '16px', fontSize: '11px', color: 'var(--text-muted)' }}>
           Based on publicly available auction and listing data, updated weekly. Not financial advice.
         </p>
