@@ -26,7 +26,26 @@ const KEYS = ['median', 'clearance', 'dom', 'yield', 'growth']
 export default function BuyersPage() {
   const [selected, setSelected] = useState(['Fitzroy', 'Collingwood', ''])
   const [watchlistEmail, setWatchlistEmail] = useState('')
-  const [watchlistDone, setWatchlistDone] = useState(false)
+  const [watchlistStatus, setWatchlistStatus] = useState('idle') // idle | loading | success | error
+  const [watchlistError, setWatchlistError]   = useState('')
+
+  async function handleWatchlist() {
+    if (!watchlistEmail) return
+    setWatchlistStatus('loading')
+    try {
+      const res  = await fetch('/api/subscribe', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email: watchlistEmail }),
+      })
+      const data = await res.json()
+      if (data.success) { setWatchlistStatus('success') }
+      else { setWatchlistError(data.error || 'Something went wrong, please try again.'); setWatchlistStatus('error') }
+    } catch {
+      setWatchlistError('Something went wrong, please try again.')
+      setWatchlistStatus('error')
+    }
+  }
 
   const setSuburb = (i, val) => setSelected(prev => prev.map((s, idx) => idx === i ? val : s))
 
@@ -162,12 +181,15 @@ export default function BuyersPage() {
             <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7'}}>Enter your email and we&apos;ll notify you when median prices shift or clearance rates move significantly in the suburbs you care about.</p>
           </div>
           <div>
-            {watchlistDone ? (
-              <div style={{color:'#4ade80', fontSize:'14px', padding:'20px', border:'1px solid rgba(74,222,128,0.3)', background:'rgba(74,222,128,0.05)'}}>You&apos;re on the watchlist. We&apos;ll be in touch when your suburbs move.</div>
+            {watchlistStatus === 'success' ? (
+              <div style={{color:'#4ade80', fontSize:'14px', padding:'20px', border:'1px solid rgba(74,222,128,0.3)', background:'rgba(74,222,128,0.05)'}}>You&apos;re in! First digest arrives Monday.</div>
             ) : (
               <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
                 <input className="email-input" type="email" placeholder="Your email address" value={watchlistEmail} onChange={e => setWatchlistEmail(e.target.value)} />
-                <button className="btn-primary" style={{padding:'16px'}} onClick={() => watchlistEmail && setWatchlistDone(true)}>Add me to the watchlist</button>
+                <button className="btn-primary" style={{padding:'16px'}} onClick={handleWatchlist} disabled={watchlistStatus === 'loading'}>
+                  {watchlistStatus === 'loading' ? 'Subscribing…' : 'Add me to the watchlist'}
+                </button>
+                {watchlistStatus === 'error' && <div style={{color:'#f87171', fontSize:'13px'}}>{watchlistError}</div>}
               </div>
             )}
           </div>

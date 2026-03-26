@@ -16,6 +16,28 @@ const STATIC_DEAL = {
 
 export default function Home() {
   const [deal, setDeal] = useState(STATIC_DEAL)
+  const [subFirstName, setSubFirstName] = useState('')
+  const [subEmail, setSubEmail]         = useState('')
+  const [subStatus, setSubStatus]       = useState('idle') // idle | loading | success | error
+  const [subError, setSubError]         = useState('')
+
+  async function handleSubscribe() {
+    if (!subEmail) return
+    setSubStatus('loading')
+    try {
+      const res  = await fetch('/api/subscribe', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ firstName: subFirstName, email: subEmail }),
+      })
+      const data = await res.json()
+      if (data.success) { setSubStatus('success') }
+      else { setSubError(data.error || 'Something went wrong, please try again.'); setSubStatus('error') }
+    } catch {
+      setSubError('Something went wrong, please try again.')
+      setSubStatus('error')
+    }
+  }
 
   useEffect(() => {
     fetch('/api/deal')
@@ -390,12 +412,21 @@ export default function Home() {
           <p className="email-sub">Undervalued properties, suburb trends and market intelligence — delivered every Monday morning. Free.</p>
         </div>
         <div>
-          <div className="email-form">
-            <input type="text" className="email-input" placeholder="First name" />
-            <input type="email" className="email-input" placeholder="Email address" />
-            <button className="btn-primary" style={{padding:'16px'}}>Send Me This Week&apos;s Deals</button>
-            <div className="email-promise">Published weekly · No spam · Unsubscribe any time</div>
-          </div>
+          {subStatus === 'success' ? (
+            <div style={{color:'#4ade80', fontSize:'14px', padding:'24px', border:'1px solid rgba(74,222,128,0.3)', background:'rgba(74,222,128,0.05)'}}>
+              You&apos;re in! First digest arrives Monday.
+            </div>
+          ) : (
+            <div className="email-form">
+              <input type="text" className="email-input" placeholder="First name" value={subFirstName} onChange={e => setSubFirstName(e.target.value)} />
+              <input type="email" className="email-input" placeholder="Email address" value={subEmail} onChange={e => setSubEmail(e.target.value)} />
+              <button className="btn-primary" style={{padding:'16px'}} onClick={handleSubscribe} disabled={subStatus === 'loading'}>
+                {subStatus === 'loading' ? 'Subscribing…' : 'Send Me This Week\'s Deals'}
+              </button>
+              {subStatus === 'error' && <div style={{color:'#f87171', fontSize:'13px'}}>{subError}</div>}
+              <div className="email-promise">Published weekly · No spam · Unsubscribe any time</div>
+            </div>
+          )}
         </div>
       </section>
 
