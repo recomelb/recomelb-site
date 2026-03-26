@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const STATIC_DEAL = {
   price:       '$580,000',
@@ -433,12 +434,14 @@ export default function Home() {
       {/* FOUNDER SECTION */}
       <section className="founder-section" id="about">
         <div>
-          <div className="founder-photo-placeholder">
-            <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="32" cy="24" r="14" fill="none" stroke="#c9a84c" strokeWidth="1.5"/>
-              <path d="M6 58c0-14.4 11.6-26 26-26s26 11.6 26 26" fill="none" stroke="#c9a84c" strokeWidth="1.5"/>
-            </svg>
-            <div className="founder-photo-placeholder-text">Photo coming soon</div>
+          <div style={{position:'relative', width:'100%', aspectRatio:'3/4', border:'1px solid var(--navy-border)', overflow:'hidden'}}>
+            <Image
+              src="/founder.jpg"
+              alt="Adi Agarwal — Founder, RECOMELB"
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              style={{objectFit:'cover', filter:'grayscale(100%)'}}
+            />
           </div>
           <div className="founder-photo-caption">Adi Agarwal · Founder</div>
         </div>

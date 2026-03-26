@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export const metadata = { title: 'Founder — RECOMELB' }
 
 const HOW_IT_WORKS = [
@@ -13,12 +15,15 @@ export default function AboutPage() {
       {/* FOUNDER HERO */}
       <section className="founder-section" style={{paddingTop:'140px'}}>
         <div>
-          <div className="founder-photo-placeholder">
-            <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="32" cy="24" r="14" fill="none" stroke="#c9a84c" strokeWidth="1.5"/>
-              <path d="M6 58c0-14.4 11.6-26 26-26s26 11.6 26 26" fill="none" stroke="#c9a84c" strokeWidth="1.5"/>
-            </svg>
-            <div className="founder-photo-placeholder-text">Photo coming soon</div>
+          <div style={{position:'relative', width:'100%', aspectRatio:'3/4', border:'1px solid var(--navy-border)', overflow:'hidden'}}>
+            <Image
+              src="/founder.jpg"
+              alt="Adi Agarwal — Founder, RECOMELB"
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              style={{objectFit:'cover', filter:'grayscale(100%)'}}
+              priority
+            />
           </div>
           <div className="founder-photo-caption">Adi Agarwal · Founder</div>
         </div>
