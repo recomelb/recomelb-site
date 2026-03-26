@@ -6,11 +6,11 @@ export async function POST(request) {
       return Response.json({ error: 'A valid email address is required.' }, { status: 400 })
     }
 
-    const apiKey  = process.env.BREVO_API_KEY
-    const listId  = parseInt(process.env.BREVO_LIST_ID)
+    const apiKey = process.env.BREVO_API_KEY
+    const listId = parseInt(process.env.BREVO_LIST_ID)
 
     if (!apiKey || !listId) {
-      console.error('Brevo env vars not set')
+      console.error('[subscribe] Brevo env vars not set')
       return Response.json({ error: 'Subscription service unavailable.' }, { status: 503 })
     }
 
@@ -22,23 +22,23 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         email,
-        attributes:     { FIRSTNAME: firstName?.trim() || '' },
-        listIds:        [listId],
-        updateEnabled:  true, // update if contact already exists
+        attributes:    { FIRSTNAME: firstName?.trim() || '' },
+        listIds:       [listId],
+        updateEnabled: true,
       }),
     })
 
-    // 201 = created, 204 = updated (already existed)
+    // 201 = new contact, 204 = existing contact updated
     if (res.status === 201 || res.status === 204) {
       return Response.json({ success: true })
     }
 
     const body = await res.json().catch(() => ({}))
-    console.error('Brevo error', res.status, body)
+    console.error('[subscribe] Brevo error', res.status, body)
     return Response.json({ error: 'Could not subscribe. Please try again.' }, { status: 500 })
 
   } catch (err) {
-    console.error('Subscribe route error', err)
+    console.error('[subscribe] error:', err)
     return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }
