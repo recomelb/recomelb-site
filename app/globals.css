@@ -1622,6 +1622,10 @@ footer {
   /* Fixed-width selects */
   .select-input { max-width: 100% !important; width: 100% !important; }
 
+  /* Filter tabs — scrollable on mobile */
+  .filter-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; max-width: 100%; }
+  .filter-tab  { white-space: nowrap; flex-shrink: 0; }
+
   /* Prevent long strings overflowing */
   p, li, td, th, label, span { word-break: break-word; overflow-wrap: break-word; }
 

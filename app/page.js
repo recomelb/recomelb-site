@@ -3,6 +3,13 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
+function getCurrentWeek() {
+  const now = new Date()
+  const startOfYear = new Date(now.getFullYear(), 0, 1)
+  const dayOfYear = Math.floor((now - startOfYear) / 86400000)
+  return { week: Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7), year: now.getFullYear() }
+}
+
 const STATIC_DEAL = {
   price:       '$580,000',
   address:     '2-bed townhouse · Fitzroy North',
@@ -112,7 +119,7 @@ export default function Home() {
         <div className="live-ticker">
           <div className="ticker-label">
             <span className="live-dot"></span>
-            <span>Live · Week 11, 2025</span>
+            <span>Live · Week {getCurrentWeek().week}, {getCurrentWeek().year}</span>
           </div>
           <div className="stat-hero">
             <div className="stat-hero-num" id="clearance-rate">0%</div>
