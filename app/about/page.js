@@ -20,6 +20,7 @@ export default function AboutPage() {
               src="/founder.jpg"
               alt="Adi Agarwal — Founder, RECOMELB"
               fill
+              unoptimized
               sizes="(max-width: 768px) 100vw, 400px"
               style={{objectFit:'cover', filter:'grayscale(100%)'}}
               priority
