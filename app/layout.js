@@ -7,6 +7,11 @@ export const metadata = {
   description: 'Real-time suburb data, auction results and market intelligence for Melbourne\'s inner ring. Updated every Monday.',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

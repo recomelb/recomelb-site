@@ -58,7 +58,7 @@ export default function CommercialPage() {
           ))}
         </div>
 
-        <div className="commercial-grid" style={{gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))'}}>
+        <div className="commercial-grid" style={{gridTemplateColumns:'repeat(auto-fill,minmax(min(280px,100%),1fr))'}}>
           {sheetLoaded && precincts.length === 0 && (
             <div style={{padding:'60px', color:'var(--text-muted)', gridColumn:'1/-1', textAlign:'center'}}>Commercial data coming soon.</div>
           )}

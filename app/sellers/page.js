@@ -137,7 +137,7 @@ export default function SellersPage() {
           ))}
         </div>
 
-        <div className="table-scroll">
+        <div className="table-scroll" style={{overflowX:'auto', width:'100%'}}>
         <table className="heat-table">
           <thead>
             <tr>

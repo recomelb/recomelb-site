@@ -79,7 +79,7 @@ export default function ResidentialPage() {
           ))}
         </div>
 
-        <div className="suburb-grid" style={{gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))'}}>
+        <div className="suburb-grid" style={{gridTemplateColumns:'repeat(auto-fill,minmax(min(260px,100%),1fr))'}}>
           {visible.map(s => (
             <div className="suburb-card" key={s.name}>
               <span className="suburb-tag">{s.type}</span>
