@@ -1462,20 +1462,33 @@ footer {
 }
 
 /* MOBILE ADDITIONS */
-@media (max-width: 768px) {
-  .page-hero { padding: 100px 20px 60px; }
-  .comparison-selectors { grid-template-columns: 1fr; }
-  .comparison-table th, .comparison-table td { padding: 12px 16px; }
-  .article-grid { grid-template-columns: 1fr; }
-  .steps-grid { grid-template-columns: 1fr 1fr; }
-  .undervalued-grid { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
-  .report-preview-grid { grid-template-columns: 1fr 1fr; }
-}
 @media (max-width: 1024px) {
   .article-grid { grid-template-columns: 1fr 1fr; }
   .steps-grid { grid-template-columns: 1fr 1fr; }
   .undervalued-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .page-hero { padding: 100px 20px 60px; }
+  /* Inline-styled grids — require !important to beat inline style specificity */
+  .signpost-grid     { grid-template-columns: 1fr !important; }
+  .two-col-grid      { grid-template-columns: 1fr !important; gap: 40px !important; }
+  .four-tile-grid    { grid-template-columns: 1fr !important; }
+  .preview-stats     { grid-template-columns: 1fr 1fr !important; }
+  .stats-strip-grid  { grid-template-columns: 1fr 1fr !important; }
+  .budget-timeline   { grid-template-columns: 1fr !important; }
+  /* Inline-styled sections — side padding to 20px */
+  .section-padded { padding-left: 20px !important; padding-right: 20px !important; padding-top: 60px !important; padding-bottom: 60px !important; }
+  /* CSS-class grids with inline style overrides */
+  .suburb-grid     { grid-template-columns: 1fr !important; }
+  .commercial-grid { grid-template-columns: 1fr !important; }
+  .comparison-selectors { grid-template-columns: 1fr !important; }
+  /* Standard class-based grids */
+  .comparison-table th, .comparison-table td { padding: 12px 16px; }
+  .article-grid    { grid-template-columns: 1fr; }
+  .steps-grid      { grid-template-columns: 1fr 1fr; }
+  .undervalued-grid { grid-template-columns: 1fr; }
+  .form-grid       { grid-template-columns: 1fr; }
+  .report-preview-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* COMING SOON PAGE */
@@ -1557,34 +1570,39 @@ footer {
 /* ── MOBILE (≤768px) ── */
 @media (max-width: 768px) {
   nav { padding: 0 20px; }
-  .hero { padding: 100px 20px 60px; }
-  .suburb-strip { padding: 60px 20px; }
-  .audience-section { padding: 60px 20px; }
-  .news-section { padding: 60px 20px; }
-  .email-section { padding: 60px 20px; }
-  .founder-section { padding: 60px 20px; }
-  .deal-section { padding: 60px 20px; }
-  footer { padding: 32px 20px; }
-  .coming-soon { padding: 100px 20px 60px; }
-
   .nav-links { display: none; }
   .nav-hamburger { display: flex; }
+  .nav-cta { display: none; }
 
-  .hero { flex-direction: column; justify-content: flex-start; }
+  .hero { padding: 100px 20px 60px; flex-direction: column; justify-content: flex-start; }
   .hero-headline { font-size: clamp(38px, 11vw, 56px); }
   .live-ticker { position: static; transform: none; width: 100%; margin-top: 40px; }
+  .hero-bg-line { display: none; }
+  .scroll-hint { display: none; }
+
+  .suburb-strip   { padding: 60px 20px; }
+  .audience-section { padding: 60px 20px; }
+  .news-section   { padding: 60px 20px; }
+  .email-section  { padding: 60px 20px; grid-template-columns: 1fr; gap: 40px; }
+  .founder-section { padding: 60px 20px; grid-template-columns: 1fr; gap: 40px; }
+  .deal-section   { padding: 60px 20px; }
+  footer          { padding: 32px 20px; }
+  .coming-soon    { padding: 100px 20px 60px; }
 
   .suburb-grid,
   .commercial-grid { grid-template-columns: 1fr; }
-  .audience-grid { grid-template-columns: 1fr; }
-  .news-grid { grid-template-columns: 1fr; }
-  .email-section { grid-template-columns: 1fr; gap: 40px; }
-  .founder-section { grid-template-columns: 1fr; gap: 40px; }
-  .deal-card { grid-template-columns: 1fr; }
-  .deal-price { font-size: 44px; }
+  .audience-grid  { grid-template-columns: 1fr; }
+  .news-grid      { grid-template-columns: 1fr; }
+  .deal-card      { grid-template-columns: 1fr; }
+  .deal-price     { font-size: 44px; }
 
   .founder-photo-placeholder { aspect-ratio: 4/3; }
   .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .hero-bg-line { display: none; }
-  .scroll-hint { display: none; }
+
+  /* Table scroll on mobile */
+  .heat-table     { font-size: 12px; }
+  .heat-table th,
+  .heat-table td  { padding: 12px 14px; }
+  .heat-table .suburb-col { font-size: 15px; }
+  .heat-table .num-col    { font-size: 15px; }
 }

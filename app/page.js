@@ -325,7 +325,7 @@ export default function Home() {
             <h2 className="section-title">Find what&apos;s built for you.</h2>
           </div>
         </div>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
+        <div className="signpost-grid" style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
           <Link href="/buyers" style={{display:'block', background:'var(--navy-mid)', padding:'48px 36px', textDecoration:'none', transition:'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='var(--navy-dark)'} onMouseLeave={e => e.currentTarget.style.background='var(--navy-mid)'}>
             <div style={{fontSize:'10px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'20px'}}>Buyers &amp; Renters</div>
             <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'28px', fontWeight:'300', color:'var(--text-primary)', lineHeight:'1.2', marginBottom:'16px'}}>I&apos;m looking to<br />buy or rent.</div>
@@ -349,7 +349,7 @@ export default function Home() {
 
       {/* SELLERS SECTION */}
       <section className="suburb-strip" id="sellers" style={{borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'start'}}>
+        <div className="two-col-grid" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'start'}}>
           <div>
             <div className="section-eyebrow" style={{marginBottom:'16px'}}>Thinking of selling?</div>
             <h2 className="section-title" style={{marginBottom:'20px'}}>Is now the right<br />time to sell?</h2>

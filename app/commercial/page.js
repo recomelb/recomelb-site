@@ -83,7 +83,7 @@ export default function CommercialPage() {
       {/* STATS STRIP */}
       <section style={{padding:'60px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
         <div className="section-eyebrow" style={{marginBottom:'32px'}}>Market summary · Q1 2025</div>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
+        <div className="stats-strip-grid" style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
           {[
             { num: '6.8%', label: 'Avg net yield · CBD office' },
             { num: '3.1%', label: 'Vacancy · Industrial (lowest)' },

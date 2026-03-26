@@ -119,7 +119,7 @@ export default function BuyersPage() {
         </p>
 
         {/* SELECTORS */}
-        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'16px', marginBottom:'40px'}}>
+        <div className="comparison-selectors" style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'16px', marginBottom:'40px'}}>
           {[0,1,2].map(i => (
             <div key={i}>
               <div style={{fontSize:'10px', letterSpacing:'0.16em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'8px'}}>
@@ -280,8 +280,8 @@ export default function BuyersPage() {
       </section>
 
       {/* WATCHLIST SIGNUP */}
-      <section style={{padding:'80px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'center'}}>
+      <section className="section-padded" style={{padding:'80px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
+        <div className="two-col-grid" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'center'}}>
           <div>
             <div className="section-eyebrow">Suburb watchlist</div>
             <h2 className="section-title" style={{marginBottom:'16px'}}>Get alerts when<br />your suburb moves.</h2>

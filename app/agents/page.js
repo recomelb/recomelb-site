@@ -281,7 +281,7 @@ export default function AgentsPage() {
             </div>
 
             {/* Stats grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1px', background: 'var(--navy-border)' }}>
+            <div className="preview-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1px', background: 'var(--navy-border)' }}>
               {[
                 { label: 'Median price',     value: selectedSuburb.median   || '—' },
                 { label: 'Clearance rate',   value: selectedSuburb.clearance != null ? selectedSuburb.clearance + '%' : '—' },
@@ -395,7 +395,7 @@ export default function AgentsPage() {
             <h2 className="section-title">Buyers register here.<br />Leads go to you.</h2>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
+        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
           <div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.7', marginBottom: '24px' }}>
               Buyers submit their suburb preference, budget and timeline here. Leads are captured and matched to agents covering the relevant area — free during beta.
@@ -435,7 +435,7 @@ export default function AgentsPage() {
                   {suburbs.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
                 </select>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="budget-timeline" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
                   <label style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>Budget range</label>
                   <select className="select-input" style={{ width: '100%' }} value={lead.budget} onChange={e => setLead(p => ({ ...p, budget: e.target.value }))}>

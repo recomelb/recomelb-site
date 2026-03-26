@@ -188,8 +188,8 @@ export default function SellersPage() {
       </section>
 
       {/* SEASONAL TIMING GUIDE */}
-      <section style={{ padding: '80px 48px', borderTop: '1px solid var(--navy-border)', background: 'rgba(17,24,39,0.5)' }} id="timing">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
+      <section className="section-padded" style={{ padding: '80px 48px', borderTop: '1px solid var(--navy-border)', background: 'rgba(17,24,39,0.5)' }} id="timing">
+        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
           <div>
             <div className="section-eyebrow">Seasonal timing guide</div>
             <h2 className="section-title" style={{ marginBottom: '20px' }}>
@@ -234,7 +234,7 @@ export default function SellersPage() {
           <h2 className="section-title">Know the numbers<br />before you meet your agent.</h2>
           <p>RECOMELB gives you the same data your agent will use in their appraisal — so you walk into that conversation informed, not blind.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--navy-border)', border: '1px solid var(--navy-border)', marginBottom: '40px' }}>
+        <div className="four-tile-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--navy-border)', border: '1px solid var(--navy-border)', marginBottom: '40px' }}>
           {APPRAISAL_POINTS.map(p => (
             <div key={p.title} style={{ background: 'var(--navy-mid)', padding: '36px 32px' }}>
               <div style={{ color: 'var(--gold)', fontSize: '20px', marginBottom: '14px' }}>{p.icon}</div>
@@ -264,7 +264,7 @@ export default function SellersPage() {
       </section>
 
       {/* SUBSCRIBE CTA */}
-      <section style={{ padding: '80px 48px', borderTop: '1px solid var(--navy-border)' }}>
+      <section className="section-padded" style={{ padding: '80px 48px', borderTop: '1px solid var(--navy-border)' }}>
         <div style={{ maxWidth: '560px' }}>
           <div className="section-eyebrow">Weekly seller briefing</div>
           <h2 className="section-title" style={{ marginBottom: '16px' }}>

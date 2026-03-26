@@ -56,8 +56,8 @@ export default function AboutPage() {
       </section>
 
       {/* VISION & MISSION */}
-      <section style={{padding:'80px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px'}}>
+      <section className="section-padded" style={{padding:'80px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
+        <div className="two-col-grid" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px'}}>
           <div>
             <div className="section-eyebrow" style={{marginBottom:'16px'}}>Mission</div>
             <h2 className="section-title" style={{marginBottom:'20px'}}>Make Melbourne property<br />data accessible to everyone.</h2>
@@ -102,8 +102,8 @@ export default function AboutPage() {
       </section>
 
       {/* CONTACT */}
-      <section style={{padding:'80px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'start'}}>
+      <section className="section-padded" style={{padding:'80px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
+        <div className="two-col-grid" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'start'}}>
           <div>
             <div className="section-eyebrow" style={{marginBottom:'16px'}}>Contact</div>
             <h2 className="section-title" style={{marginBottom:'16px'}}>Get in touch.</h2>
