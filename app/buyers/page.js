@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { createClient } from '@/utils/supabase/client'
 
 const STATIC_SUBURBS = [
   { name: 'Fitzroy',       median: '$1.48M', clearance: '74%', dom: '22 days', yield: '3.8%', change: '+3.2%', _c:74, _d:22, _y:3.8, _g:3.2, _m:1.48 },
@@ -14,11 +15,6 @@ const STATIC_SUBURBS = [
   { name: 'South Yarra',   median: '$1.68M', clearance: '78%', dom: '18 days', yield: '3.2%', change: '+3.9%', _c:78, _d:18, _y:3.2, _g:3.9, _m:1.68 },
 ]
 
-const UNDERVALUED = [
-  { address: '2-bed townhouse, Fitzroy North', price: '$580,000', vsMedian: '6.4% below unit median', yield: '4.8%', dom: '18 days', tag: 'Best pick' },
-  { address: '1-bed apartment, Collingwood',   price: '$448,000', vsMedian: '4.1% below unit median', yield: '5.1%', dom: '12 days', tag: 'High yield' },
-  { address: '3-bed terrace, Brunswick',       price: '$920,000', vsMedian: '5.8% below house median', yield: '4.2%', dom: '21 days', tag: 'Value buy' },
-]
 
 // Normalise API shape → comparison shape
 function normalise(s) {
@@ -60,25 +56,36 @@ function bestIndex(compared, rawKey, direction) {
 export default function BuyersPage() {
   const [suburbs, setSuburbs]         = useState(STATIC_SUBURBS.map(normalise))
   const [selected, setSelected]       = useState(['Fitzroy', 'Collingwood', ''])
-  const [watchlistEmail, setWatchlistEmail] = useState('')
+  const [watchlistEmail, setWatchlistEmail]   = useState('')
+  const [watchlistSuburb, setWatchlistSuburb] = useState('')
   const [watchlistStatus, setWatchlistStatus] = useState('idle')
   const [watchlistError, setWatchlistError]   = useState('')
+  const [undervalued, setUndervalued]         = useState([])
+  const [undervaluedLoaded, setUndervaluedLoaded] = useState(false)
 
   useEffect(() => {
     fetch('/api/suburbs')
       .then(r => r.json())
       .then(data => { if (data.length > 0) setSuburbs(data.map(normalise)) })
       .catch(() => {})
+
+    const supabase = createClient()
+    supabase.from('undervalued_listings').select('*').order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data && data.length > 0) setUndervalued(data)
+        setUndervaluedLoaded(true)
+      })
+      .catch(() => setUndervaluedLoaded(true))
   }, [])
 
   async function handleWatchlist() {
     if (!watchlistEmail) return
     setWatchlistStatus('loading')
     try {
-      const res  = await fetch('/api/subscribe', {
+      const res  = await fetch('/api/watchlist', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email: watchlistEmail }),
+        body:    JSON.stringify({ email: watchlistEmail, suburb: watchlistSuburb }),
       })
       const data = await res.json()
       if (data.success) { setWatchlistStatus('success') }
@@ -262,20 +269,26 @@ export default function BuyersPage() {
             <h2 className="section-title">Below-median properties flagged this week.</h2>
           </div>
         </div>
-        <div className="undervalued-grid">
-          {UNDERVALUED.map(p => (
-            <div className="undervalued-card" key={p.address}>
-              <span className="deal-badge" style={{marginBottom:'20px', display:'inline-block'}}>{p.tag}</span>
-              <div className="suburb-price">{p.price}</div>
-              <div className="suburb-type" style={{marginTop:'6px', marginBottom:'20px'}}>{p.address}</div>
-              <div style={{display:'inline-block', background:'rgba(74,222,128,0.1)', border:'1px solid rgba(74,222,128,0.3)', color:'#4ade80', fontSize:'11px', letterSpacing:'0.08em', textTransform:'uppercase', padding:'4px 10px', marginBottom:'20px'}}>{p.vsMedian}</div>
-              <div className="suburb-meta">
-                <div className="suburb-meta-item">Yield<span>{p.yield}</span></div>
-                <div className="suburb-meta-item">DOM<span>{p.dom}</span></div>
+        {undervaluedLoaded && undervalued.length === 0 ? (
+          <div style={{padding:'60px 48px', border:'1px solid var(--navy-border)', color:'var(--text-muted)', fontSize:'14px', textAlign:'center', letterSpacing:'0.04em'}}>
+            Checking for deals this week — check back Monday.
+          </div>
+        ) : (
+          <div className="undervalued-grid">
+            {undervalued.map(p => (
+              <div className="undervalued-card" key={p.address || p.id}>
+                <span className="deal-badge" style={{marginBottom:'20px', display:'inline-block'}}>{p.tag}</span>
+                <div className="suburb-price">{p.price}</div>
+                <div className="suburb-type" style={{marginTop:'6px', marginBottom:'20px'}}>{p.address}</div>
+                <div style={{display:'inline-block', background:'rgba(74,222,128,0.1)', border:'1px solid rgba(74,222,128,0.3)', color:'#4ade80', fontSize:'11px', letterSpacing:'0.08em', textTransform:'uppercase', padding:'4px 10px', marginBottom:'20px'}}>{p.vs_median}</div>
+                <div className="suburb-meta">
+                  <div className="suburb-meta-item">Yield<span>{p.yield}</span></div>
+                  <div className="suburb-meta-item">DOM<span>{p.dom}</span></div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         <p className="deal-disclaimer" style={{marginTop:'16px'}}>Properties flagged based on publicly available listing data. Not financial advice.</p>
       </section>
 
@@ -293,6 +306,10 @@ export default function BuyersPage() {
             ) : (
               <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
                 <input className="email-input" type="email" placeholder="Your email address" value={watchlistEmail} onChange={e => setWatchlistEmail(e.target.value)} />
+                <select className="select-input" style={{width:'100%'}} value={watchlistSuburb} onChange={e => setWatchlistSuburb(e.target.value)}>
+                  <option value="">— Select suburb to watch (optional) —</option>
+                  {suburbs.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                </select>
                 <button className="btn-primary" style={{padding:'16px'}} onClick={handleWatchlist} disabled={watchlistStatus === 'loading'}>
                   {watchlistStatus === 'loading' ? 'Subscribing…' : 'Add me to the watchlist'}
                 </button>

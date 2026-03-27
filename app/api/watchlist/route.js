@@ -7,28 +7,25 @@ const supabase = createClient(
 
 export async function POST(request) {
   try {
-    const { name, email, suburb, budget, timeline } = await request.json()
+    const { email, suburb } = await request.json()
 
     if (!email || !email.includes('@')) {
       return Response.json({ error: 'A valid email address is required.' }, { status: 400 })
     }
 
-    const { error } = await supabase.from('leads').insert({
-      name:     name     || null,
+    const { error } = await supabase.from('watchlist').insert({
       email,
-      suburb:   suburb   || null,
-      budget:   budget   || null,
-      timeline: timeline || null,
+      suburb: suburb || null,
     })
 
     if (error) {
-      console.error('[leads] Supabase error:', error)
-      return Response.json({ error: 'Could not save lead. Please try again.' }, { status: 500 })
+      console.error('[watchlist] Supabase error:', error)
+      return Response.json({ error: 'Could not save. Please try again.' }, { status: 500 })
     }
 
     return Response.json({ success: true })
   } catch (err) {
-    console.error('[leads] error:', err)
+    console.error('[watchlist] error:', err)
     return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }
