@@ -13,6 +13,10 @@ export async function POST(request) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
+    console.log('[watchlist] url present:', !!url)
+    console.log('[watchlist] key present:', !!key)
+    console.log('[watchlist] key prefix:', key ? key.slice(0, 20) : 'none')
+
     if (!url || !key) {
       console.error('[watchlist] Supabase env vars not set')
       return Response.json({ error: 'Service unavailable.' }, { status: 503 })
@@ -25,22 +29,29 @@ export async function POST(request) {
     }).select()
 
     if (error) {
-      console.error('[watchlist] Supabase insert error:', {
-        message: error.message,
-        code:    error.code,
-        details: error.details,
-        hint:    error.hint,
-      })
+      console.error('[watchlist] FULL ERROR:', JSON.stringify(error))
+      console.error('[watchlist] error.message:', error.message)
+      console.error('[watchlist] error.code:', error.code)
+      console.error('[watchlist] error.details:', error.details)
+      console.error('[watchlist] error.hint:', error.hint)
+      console.error('[watchlist] error.status:', error.status)
       return Response.json({
-        error:  'Could not save. Please try again.',
-        _debug: error.message,
+        error:   'Could not save. Please try again.',
+        _debug:  error.message,
+        _code:   error.code,
+        _hint:   error.hint,
+        _status: error.status,
       }, { status: 500 })
     }
 
-    console.log('[watchlist] Inserted row:', data)
+    console.log('[watchlist] Success, inserted:', JSON.stringify(data))
     return Response.json({ success: true })
   } catch (err) {
-    console.error('[watchlist] Unexpected error:', err)
-    return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
+    console.error('[watchlist] Unexpected exception:', err.message)
+    console.error('[watchlist] Stack:', err.stack)
+    return Response.json({
+      error:  'Something went wrong. Please try again.',
+      _debug: err.message,
+    }, { status: 500 })
   }
 }
