@@ -2,7 +2,9 @@ import { createServerClient } from '@supabase/ssr'
 
 export const createClient = (cookieStore) => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables')
@@ -19,8 +21,7 @@ export const createClient = (cookieStore) => {
             cookieStore.set(name, value, options)
           )
         } catch {
-          // Called from a Server Component — safe to ignore if middleware
-          // is refreshing user sessions.
+          // Called from a Server Component — safe to ignore.
         }
       },
     },
