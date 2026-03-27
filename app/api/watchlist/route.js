@@ -9,9 +9,7 @@ export async function POST(request) {
     }
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const key =
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     console.log('[watchlist] url present:', !!url)
     console.log('[watchlist] key present:', !!key)
