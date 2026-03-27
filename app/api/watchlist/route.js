@@ -1,10 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-)
-
 export async function POST(request) {
   try {
     const { email, suburb } = await request.json()
@@ -13,6 +8,14 @@ export async function POST(request) {
       return Response.json({ error: 'A valid email address is required.' }, { status: 400 })
     }
 
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+    if (!url || !key) {
+      console.error('[watchlist] Supabase env vars not set')
+      return Response.json({ error: 'Service unavailable.' }, { status: 503 })
+    }
+
+    const supabase = createClient(url, key)
     const { error } = await supabase.from('watchlist').insert({
       email,
       suburb: suburb || null,
