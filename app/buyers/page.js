@@ -69,13 +69,21 @@ export default function BuyersPage() {
       .then(data => { if (data.length > 0) setSuburbs(data.map(normalise)) })
       .catch(() => {})
 
-    const supabase = createClient()
-    supabase.from('undervalued_listings').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => {
-        if (data && data.length > 0) setUndervalued(data)
+    try {
+      const supabase = createClient()
+      if (supabase) {
+        supabase.from('undervalued_listings').select('*').order('created_at', { ascending: false })
+          .then(({ data }) => {
+            if (data && data.length > 0) setUndervalued(data)
+            setUndervaluedLoaded(true)
+          })
+          .catch(() => setUndervaluedLoaded(true))
+      } else {
         setUndervaluedLoaded(true)
-      })
-      .catch(() => setUndervaluedLoaded(true))
+      }
+    } catch {
+      setUndervaluedLoaded(true)
+    }
   }, [])
 
   async function handleWatchlist() {
