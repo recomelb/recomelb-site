@@ -13,3 +13,4 @@
 *.pem
 .env*
 npm-debug.log*
+.claude/
