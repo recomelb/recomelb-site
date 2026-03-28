@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import SuburbChart from '@/components/SuburbChart'
 
 const STATIC_SUBURBS = [
@@ -15,17 +16,22 @@ const STATIC_SUBURBS = [
   { name: 'South Yarra',   type: 'House', location: 'Inner East',  tag: 'Blue chip',   median: '$1.68M', clearance: 78, dom: 18, change: '+3.9%', up: true,  trend: [1.46,1.49,1.52,1.55,1.57,1.60,1.62,1.63,1.65,1.66,1.67,1.68] },
 ]
 
-const LISTING_SUBURBS = [
-  { label: 'Fitzroy',    src: 'https://www.domain.com.au/sale/?suburb=fitzroy,3065&excludedeposittaken=1' },
-  { label: 'Collingwood',src: 'https://www.domain.com.au/sale/?suburb=collingwood,3066&excludedeposittaken=1' },
-  { label: 'Richmond',   src: 'https://www.domain.com.au/sale/?suburb=richmond,3121&excludedeposittaken=1' },
-  { label: 'Northcote',  src: 'https://www.domain.com.au/sale/?suburb=northcote,3070&excludedeposittaken=1' },
+const LISTING_LINKS = [
+  { name: 'Fitzroy',       href: 'https://www.domain.com.au/sale/fitzroy-vic-3065/' },
+  { name: 'Collingwood',   href: 'https://www.domain.com.au/sale/collingwood-vic-3066/' },
+  { name: 'Richmond',      href: 'https://www.domain.com.au/sale/richmond-vic-3121/' },
+  { name: 'Northcote',     href: 'https://www.domain.com.au/sale/northcote-vic-3070/' },
+  { name: 'Brunswick',     href: 'https://www.domain.com.au/sale/brunswick-vic-3056/' },
+  { name: 'Abbotsford',    href: 'https://www.domain.com.au/sale/abbotsford-vic-3067/' },
+  { name: 'Carlton',       href: 'https://www.domain.com.au/sale/carlton-vic-3053/' },
+  { name: 'Prahran',       href: 'https://www.domain.com.au/sale/prahran-vic-3181/' },
+  { name: 'South Yarra',   href: 'https://www.domain.com.au/sale/south-yarra-vic-3141/' },
+  { name: 'Fitzroy North', href: 'https://www.domain.com.au/sale/fitzroy-north-vic-3068/' },
 ]
 
 export default function ResidentialPage() {
   const [filter, setFilter] = useState('All')
   const [search, setSearch] = useState('')
-  const [listingSrc, setListingSrc] = useState(LISTING_SUBURBS[0].src)
   const [suburbs, setSuburbs] = useState(STATIC_SUBURBS)
   const [sheetLoaded, setSheetLoaded] = useState(false)
 
@@ -80,10 +86,14 @@ export default function ResidentialPage() {
         </div>
 
         <div className="suburb-grid" style={{gridTemplateColumns:'repeat(auto-fill,minmax(min(260px,100%),1fr))'}}>
-          {visible.map(s => (
+          {visible.map(s => {
+            const slug = s.name.toLowerCase().replace(/\s+/g, '-')
+            return (
             <div className="suburb-card" key={s.name}>
               <span className="suburb-tag">{s.type}</span>
-              <div className="suburb-name">{s.name}</div>
+              <Link href={`/suburbs/${slug}`} style={{textDecoration:'none', color:'inherit'}}>
+                <div className="suburb-name">{s.name}</div>
+              </Link>
               <div className="suburb-type">{s.location} · <span style={{textTransform:'none'}}>{s.tag}</span></div>
               <div className="suburb-price">{s.median}</div>
               <div className={`suburb-change ${s.up ? 'up' : 'down'}`}>{s.up ? '↑' : '↓'} {s.change} this quarter</div>
@@ -93,8 +103,12 @@ export default function ResidentialPage() {
               </div>
               <div className="suburb-bar-wrap"><div className="suburb-bar" style={{width:`${s.clearance}%`}}></div></div>
               {s.trend && s.trend.length > 0 && <SuburbChart data={s.trend} />}
+              <Link href={`/suburbs/${slug}`} style={{display:'block', marginTop:'16px', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold)', textDecoration:'none'}}>
+                View suburb data →
+              </Link>
             </div>
-          ))}
+            )
+          })}
           {visible.length === 0 && sheetLoaded && suburbs.length === 0 && (
             <div style={{padding:'60px', color:'var(--text-muted)', gridColumn:'1/-1', textAlign:'center'}}>Suburb data coming soon.</div>
           )}
@@ -104,32 +118,36 @@ export default function ResidentialPage() {
         </div>
       </section>
 
-      {/* ACTIVE LISTINGS EMBED */}
+      {/* ACTIVE LISTINGS */}
       <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}}>
         <div className="section-header">
           <div>
-            <div className="section-eyebrow">Browse active listings</div>
-            <h2 className="section-title">Active listings in inner Melbourne</h2>
+            <div className="section-eyebrow">Browse active listings · Via Domain</div>
+            <h2 className="section-title">Current listings by suburb.</h2>
           </div>
         </div>
-        <div className="filter-tabs" style={{marginBottom:'24px'}}>
-          {LISTING_SUBURBS.map(s => (
-            <button
-              key={s.label}
-              className={`filter-tab${listingSrc === s.src ? ' active' : ''}`}
-              onClick={() => setListingSrc(s.src)}
-            >{s.label}</button>
+        <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7', maxWidth:'520px', marginBottom:'32px'}}>
+          Browse live residential listings on Domain for each inner-ring suburb. Opens in a new tab.
+        </p>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(min(200px,100%), 1fr))', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
+          {LISTING_LINKS.map(({ name, href }) => (
+            <div key={name} style={{background:'var(--navy-mid)', padding:'28px 24px', display:'flex', flexDirection:'column', gap:'16px'}}>
+              <div>
+                <div style={{fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'8px'}}>Residential</div>
+                <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'22px', fontWeight:'300', color:'var(--text-primary)'}}>{name}</div>
+              </div>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold)', border:'1px solid var(--gold)', padding:'8px 16px', textDecoration:'none', textAlign:'center', transition:'all 0.2s', background:'transparent', display:'block'}}
+              >
+                View listings →
+              </a>
+            </div>
           ))}
         </div>
-        <iframe
-          src={listingSrc}
-          width="100%"
-          height="600"
-          frameBorder="0"
-          style={{border:'1px solid var(--navy-border)', display:'block'}}
-          title="Domain property listings"
-        />
-        <p style={{marginTop:'12px', fontSize:'11px', color:'var(--text-muted)'}}>Listings powered by Domain</p>
+        <p style={{marginTop:'16px', fontSize:'11px', color:'var(--text-muted)'}}>Listings sourced from Domain. Opens in a new tab.</p>
       </section>
 
       {/* CTA */}

@@ -158,7 +158,7 @@ export default function SellersPage() {
               return (
                 <tr key={row.name}>
                   <td className="suburb-col">
-                    <Link href="/residential" style={{ color: 'inherit', textDecoration: 'none' }}>
+                    <Link href={`/suburbs/${row.name.toLowerCase().replace(/\s+/g, '-')}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                       {row.name}
                     </Link>
                   </td>
