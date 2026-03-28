@@ -1,11 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-const COMMERCIAL_SUBURBS = [
-  { label: 'CBD',           src: 'https://www.domain.com.au/commercial/for-lease/?suburb=melbourne,3000' },
-  { label: 'Fitzroy',       src: 'https://www.domain.com.au/commercial/for-lease/?suburb=fitzroy,3065' },
-  { label: 'Collingwood',   src: 'https://www.domain.com.au/commercial/for-lease/?suburb=collingwood,3066' },
-  { label: 'Port Melbourne', src: 'https://www.domain.com.au/commercial/for-lease/?suburb=port-melbourne,3207' },
+const LISTING_LINKS = [
+  { name: 'CBD Core',       href: 'https://www.domain.com.au/commercial/for-lease/melbourne-vic-3000/' },
+  { name: 'Fitzroy',        href: 'https://www.domain.com.au/commercial/for-lease/fitzroy-vic-3065/' },
+  { name: 'Port Melbourne', href: 'https://www.domain.com.au/commercial/for-lease/port-melbourne-vic-3207/' },
+  { name: 'Collingwood',    href: 'https://www.domain.com.au/commercial/for-lease/collingwood-vic-3066/' },
 ]
 
 const STATIC_PRECINCTS = [
@@ -21,7 +21,6 @@ const TYPES = ['All', 'Office', 'Retail', 'Industrial', 'Mixed']
 
 export default function CommercialPage() {
   const [filter, setFilter] = useState('All')
-  const [listingSrc, setListingSrc] = useState(COMMERCIAL_SUBURBS[0].src)
   const [precincts, setPrecincts] = useState(STATIC_PRECINCTS)
   const [sheetLoaded, setSheetLoaded] = useState(false)
 
@@ -98,32 +97,36 @@ export default function CommercialPage() {
         </div>
       </section>
 
-      {/* ACTIVE LISTINGS EMBED */}
+      {/* ACTIVE LISTINGS */}
       <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}}>
         <div className="section-header">
           <div>
-            <div className="section-eyebrow">Browse active listings</div>
-            <h2 className="section-title">Commercial listings in inner Melbourne</h2>
+            <div className="section-eyebrow">Browse active listings · Via Domain</div>
+            <h2 className="section-title">Current listings by precinct.</h2>
           </div>
         </div>
-        <div className="filter-tabs" style={{marginBottom:'24px'}}>
-          {COMMERCIAL_SUBURBS.map(s => (
-            <button
-              key={s.label}
-              className={`filter-tab${listingSrc === s.src ? ' active' : ''}`}
-              onClick={() => setListingSrc(s.src)}
-            >{s.label}</button>
+        <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7', maxWidth:'520px', marginBottom:'32px'}}>
+          Browse live commercial listings on Domain for each inner-Melbourne precinct. Opens in a new tab.
+        </p>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(min(200px,100%), 1fr))', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
+          {LISTING_LINKS.map(({ name, href }) => (
+            <div key={name} style={{background:'var(--navy-mid)', padding:'28px 24px', display:'flex', flexDirection:'column', gap:'16px'}}>
+              <div>
+                <div style={{fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'8px'}}>Commercial</div>
+                <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'22px', fontWeight:'300', color:'var(--text-primary)'}}>{name}</div>
+              </div>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold)', border:'1px solid var(--gold)', padding:'8px 16px', textDecoration:'none', textAlign:'center', transition:'all 0.2s', background:'transparent', display:'block'}}
+              >
+                View listings →
+              </a>
+            </div>
           ))}
         </div>
-        <iframe
-          src={listingSrc}
-          width="100%"
-          height="600"
-          frameBorder="0"
-          style={{border:'1px solid var(--navy-border)', display:'block'}}
-          title="Domain commercial listings"
-        />
-        <p style={{marginTop:'12px', fontSize:'11px', color:'var(--text-muted)'}}>Listings powered by Domain</p>
+        <p style={{marginTop:'16px', fontSize:'11px', color:'var(--text-muted)'}}>Listings sourced from Domain. Opens in a new tab.</p>
       </section>
 
       {/* CTA */}
