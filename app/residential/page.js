@@ -133,7 +133,7 @@ export default function ResidentialPage() {
       </section>
 
       {/* CTA */}
-      <section style={{padding:'60px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
+      <section className="section-padded" style={{padding:'60px 48px', borderTop:'1px solid var(--navy-border)', background:'rgba(17,24,39,0.5)'}}>
         <div style={{maxWidth:'560px'}}>
           <div className="section-eyebrow">Weekly digest</div>
           <h2 className="section-title" style={{marginBottom:'16px'}}>Get these numbers<br />every Monday.</h2>

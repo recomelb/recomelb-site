@@ -278,7 +278,7 @@ export default function BuyersPage() {
           </div>
         </div>
         {undervaluedLoaded && undervalued.length === 0 ? (
-          <div style={{padding:'60px 48px', border:'1px solid var(--navy-border)', color:'var(--text-muted)', fontSize:'14px', textAlign:'center', letterSpacing:'0.04em'}}>
+          <div style={{padding:'60px 20px', border:'1px solid var(--navy-border)', color:'var(--text-muted)', fontSize:'14px', textAlign:'center', letterSpacing:'0.04em'}}>
             Checking for deals this week — check back Monday.
           </div>
         ) : (

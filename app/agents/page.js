@@ -306,9 +306,10 @@ export default function AgentsPage() {
                 <div style={{ fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '16px' }}>
                   Price trend · 6 periods ($M)
                 </div>
-                <div style={{ display: 'flex', gap: '0', background: 'var(--navy-border)' }}>
+                <div className="table-scroll">
+                <div style={{ display: 'flex', gap: '0', background: 'var(--navy-border)', minWidth: 'max-content' }}>
                   {selectedSuburb.trend.map((val, i) => (
-                    <div key={i} style={{ flex: 1, background: 'var(--navy-dark)', padding: '12px 16px', borderRight: i < selectedSuburb.trend.length - 1 ? '1px solid var(--navy-border)' : 'none' }}>
+                    <div key={i} style={{ width: '80px', background: 'var(--navy-dark)', padding: '12px 16px', borderRight: i < selectedSuburb.trend.length - 1 ? '1px solid var(--navy-border)' : 'none' }}>
                       <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginBottom: '4px' }}>P{i + 1}</div>
                       <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '16px', color: i === selectedSuburb.trend.length - 1 ? 'var(--gold-light)' : 'var(--text-primary)' }}>
                         ${Number(val).toFixed(2)}M
@@ -316,6 +317,7 @@ export default function AgentsPage() {
                     </div>
                   ))}
                 </div>
+              </div>
               </div>
             )}
 
@@ -354,7 +356,7 @@ export default function AgentsPage() {
           </button>
         </div>
 
-        <div style={{ background: 'var(--navy-mid)', border: '1px solid var(--navy-border)', padding: '36px', maxWidth: '700px', fontFamily: 'monospace', whiteSpace: 'pre-wrap', fontSize: '13px', lineHeight: '1.8', color: 'var(--text-secondary)' }}>
+        <div style={{ background: 'var(--navy-mid)', border: '1px solid var(--navy-border)', padding: '36px', maxWidth: '700px', fontFamily: 'monospace', whiteSpace: 'pre-wrap', fontSize: '13px', lineHeight: '1.8', color: 'var(--text-secondary)', overflowX: 'auto', wordBreak: 'break-word' }}>
           <span style={{ color: 'var(--gold)', fontFamily: 'monospace' }}>
             {'RECOMELB · Weekly Market Summary · '}
             {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}
