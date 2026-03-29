@@ -55,7 +55,7 @@ function bestIndex(compared, rawKey, direction) {
 
 export default function BuyersPage() {
   const [suburbs, setSuburbs]         = useState(STATIC_SUBURBS.map(normalise))
-  const [selected, setSelected]       = useState(['Fitzroy', 'Collingwood', ''])
+  const [selected, setSelected]       = useState(['Fitzroy', 'Collingwood'])
   const [watchlistEmail, setWatchlistEmail]   = useState('')
   const [watchlistSuburb, setWatchlistSuburb] = useState('')
   const [watchlistStatus, setWatchlistStatus] = useState('idle')
@@ -126,16 +126,16 @@ export default function BuyersPage() {
         <div className="section-header">
           <div>
             <div className="section-eyebrow">Suburb comparison tool · {suburbs.length} suburbs</div>
-            <h2 className="section-title">Compare up to 3 suburbs.</h2>
+            <h2 className="section-title">Compare 2 suburbs.</h2>
           </div>
         </div>
         <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7', maxWidth:'560px', marginBottom:'32px'}}>
-          Select up to three suburbs to compare key market metrics side by side. <span style={{color:'var(--gold)'}}>Gold</span> highlights the strongest value for each metric.
+          Select 2 suburbs to compare key market metrics side by side. <span style={{color:'var(--gold)'}}>Gold</span> highlights the strongest value for each metric.
         </p>
 
         {/* SELECTORS */}
-        <div className="comparison-selectors" style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'16px', marginBottom:'40px'}}>
-          {[0,1,2].map(i => (
+        <div className="comparison-selectors" style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'16px', marginBottom:'40px'}}>
+          {[0,1].map(i => (
             <div key={i}>
               <div style={{fontSize:'10px', letterSpacing:'0.16em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'8px'}}>
                 Suburb {i + 1}{i === 0 ? ' (required)' : ' (optional)'}
