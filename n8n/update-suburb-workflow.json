@@ -1,0 +1,148 @@
+{
+  "name": "RECOMELB — Weekly Suburb Data Update",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [1],
+              "triggerAtHour": 6,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "3a1f2b8c-0001-4a2d-8e5f-111111111111",
+      "name": "Every Monday 6am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.RECOMELB_URL }}/api/update-suburb-data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $vars.UPDATE_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 58000,
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "id": "3a1f2b8c-0002-4a2d-8e5f-222222222222",
+      "name": "Update Suburb Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 300],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-updated",
+              "leftValue": "={{ $json.updated }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "3a1f2b8c-0003-4a2d-8e5f-333333333333",
+      "name": "Success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconsole.log('[RECOMELB] Update succeeded:',\n  `${data.updated} suburbs updated, ${data.cells_updated} cells written at ${data.timestamp}`);\nif (data.errors?.length) {\n  console.warn('[RECOMELB] Partial errors:', data.errors.join('; '));\n}\nreturn [{ json: { status: 'success', ...data } }];"
+      },
+      "id": "3a1f2b8c-0004-4a2d-8e5f-444444444444",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 220]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconsole.error('[RECOMELB] Update failed or returned 0 suburbs:', JSON.stringify(input));\nreturn [{ json: { status: 'failed', response: input } }];"
+      },
+      "id": "3a1f2b8c-0005-4a2d-8e5f-555555555555",
+      "name": "Log Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 400]
+    }
+  ],
+  "connections": {
+    "Every Monday 6am": {
+      "main": [
+        [{ "node": "Update Suburb Data", "type": "main", "index": 0 }]
+      ]
+    },
+    "Update Suburb Data": {
+      "main": [
+        [{ "node": "Success?", "type": "main", "index": 0 }]
+      ],
+      "error": [
+        [{ "node": "Log Failure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Success?": {
+      "main": [
+        [{ "node": "Log Success", "type": "main", "index": 0 }],
+        [{ "node": "Log Failure", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "errorWorkflow": ""
+  },
+  "meta": {
+    "instanceId": "recomelb",
+    "templateCredsSetupCompleted": true
+  },
+  "_comment": {
+    "setup": [
+      "1. In n8n, set two Variables (Settings → Variables):",
+      "   RECOMELB_URL  = https://www.recomelb.com.au",
+      "   UPDATE_API_KEY = <same value as UPDATE_API_KEY in Vercel env vars>",
+      "2. Import this workflow via n8n → Workflows → Import from file",
+      "3. Activate the workflow — it will fire every Monday at 6am",
+      "4. To test manually: open workflow → Execute workflow"
+    ]
+  }
+}
