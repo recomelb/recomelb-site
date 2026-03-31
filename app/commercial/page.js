@@ -2,12 +2,12 @@
 import { useState, useEffect } from 'react'
 
 const LISTING_LINKS = [
-  { name: 'CBD Core',       href: 'https://www.domain.com.au/commercial/for-lease/?suburb=melbourne-vic-3000' },
-  { name: 'Fitzroy',        href: 'https://www.domain.com.au/commercial/for-lease/?suburb=fitzroy-vic-3065' },
-  { name: 'Port Melbourne', href: 'https://www.domain.com.au/commercial/for-lease/?suburb=port-melbourne-vic-3207' },
-  { name: 'Collingwood',    href: 'https://www.domain.com.au/commercial/for-lease/?suburb=collingwood-vic-3066' },
-  { name: 'Richmond',       href: 'https://www.domain.com.au/commercial/for-lease/?suburb=richmond-vic-3121' },
-  { name: 'South Melbourne',href: 'https://www.domain.com.au/commercial/for-lease/?suburb=south-melbourne-vic-3205' },
+  { name: 'CBD Core',       href: 'https://www.commercialrealestate.com.au/lease/melbourne-vic-3000/' },
+  { name: 'Fitzroy',        href: 'https://www.commercialrealestate.com.au/lease/fitzroy-vic-3065/' },
+  { name: 'Port Melbourne', href: 'https://www.commercialrealestate.com.au/lease/port-melbourne-vic-3207/' },
+  { name: 'Collingwood',    href: 'https://www.commercialrealestate.com.au/lease/collingwood-vic-3066/' },
+  { name: 'Richmond',       href: 'https://www.commercialrealestate.com.au/lease/richmond-vic-3121/' },
+  { name: 'South Melbourne',href: 'https://www.commercialrealestate.com.au/lease/south-melbourne-vic-3205/' },
 ]
 
 const STATIC_PRECINCTS = [
