@@ -2,10 +2,12 @@
 import { useState, useEffect } from 'react'
 
 const LISTING_LINKS = [
-  { name: 'CBD Core',       href: 'https://www.domain.com.au/commercial/for-lease/melbourne-vic-3000/' },
-  { name: 'Fitzroy',        href: 'https://www.domain.com.au/commercial/for-lease/fitzroy-vic-3065/' },
-  { name: 'Port Melbourne', href: 'https://www.domain.com.au/commercial/for-lease/port-melbourne-vic-3207/' },
-  { name: 'Collingwood',    href: 'https://www.domain.com.au/commercial/for-lease/collingwood-vic-3066/' },
+  { name: 'CBD Core',       href: 'https://www.domain.com.au/commercial/for-lease/?suburb=melbourne-vic-3000' },
+  { name: 'Fitzroy',        href: 'https://www.domain.com.au/commercial/for-lease/?suburb=fitzroy-vic-3065' },
+  { name: 'Port Melbourne', href: 'https://www.domain.com.au/commercial/for-lease/?suburb=port-melbourne-vic-3207' },
+  { name: 'Collingwood',    href: 'https://www.domain.com.au/commercial/for-lease/?suburb=collingwood-vic-3066' },
+  { name: 'Richmond',       href: 'https://www.domain.com.au/commercial/for-lease/?suburb=richmond-vic-3121' },
+  { name: 'South Melbourne',href: 'https://www.domain.com.au/commercial/for-lease/?suburb=south-melbourne-vic-3205' },
 ]
 
 const STATIC_PRECINCTS = [
