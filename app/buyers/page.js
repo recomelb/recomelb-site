@@ -63,6 +63,10 @@ export default function BuyersPage() {
   const [undervalued, setUndervalued]         = useState([])
   const [undervaluedLoaded, setUndervaluedLoaded] = useState(false)
 
+  // Estimator form
+  const [est, setEst] = useState({ suburb: '', type: 'House', beds: '3', baths: '2', cars: '1', land: '' })
+  const [estResult, setEstResult] = useState(null)
+
   useEffect(() => {
     fetch('/api/suburbs')
       .then(r => r.json())
@@ -102,6 +106,51 @@ export default function BuyersPage() {
       setWatchlistError('Something went wrong, please try again.')
       setWatchlistStatus('error')
     }
+  }
+
+  function runEstimator() {
+    const suburbData = suburbs.find(s => s.name === est.suburb)
+    if (!suburbData || !suburbData._m) return
+
+    const base  = suburbData._m * 1_000_000 // convert from $M float to full dollars
+    const beds  = parseInt(est.beds)  || 2
+    const baths = parseInt(est.baths) || 1
+    const cars  = parseInt(est.cars)  || 0
+    const land  = parseFloat(est.land) || 0
+
+    let multiplier = 1
+
+    // Bedrooms: each above 2 adds 8%, each below 2 subtracts 8%
+    multiplier += (beds - 2) * 0.08
+
+    // Bathrooms: each above 1 adds 4%
+    if (baths > 1) multiplier += (baths - 1) * 0.04
+
+    // Car spaces: each adds 2%
+    multiplier += cars * 0.02
+
+    // Land size (houses only): each 100sqm above 300sqm adds 3%
+    if (est.type === 'House' && land > 300) {
+      multiplier += Math.floor((land - 300) / 100) * 0.03
+    }
+
+    const mid  = Math.round(base * multiplier)
+    const low  = Math.round(mid * 0.85)
+    const high = Math.round(mid * 1.15)
+
+    const fmt = (n) => {
+      if (n >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M'
+      return '$' + Math.round(n / 1000) + 'k'
+    }
+
+    setEstResult({
+      low:  fmt(low),
+      mid:  fmt(mid),
+      high: fmt(high),
+      base: fmt(Math.round(base)),
+      suburb: suburbData,
+      pct: ((multiplier - 1) * 100).toFixed(1),
+    })
   }
 
   const setSuburb = (i, val) => setSelected(prev => prev.map((s, idx) => idx === i ? val : s))
@@ -298,6 +347,156 @@ export default function BuyersPage() {
           </div>
         )}
         <p className="deal-disclaimer" style={{marginTop:'16px'}}>Properties flagged based on publicly available listing data. Not financial advice.</p>
+      </section>
+
+      {/* PROPERTY VALUE ESTIMATOR */}
+      <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}} id="estimator">
+        <div className="section-header">
+          <div>
+            <div className="section-eyebrow">Property value estimator · Median-based</div>
+            <h2 className="section-title">Estimate what a property<br />is worth in any suburb.</h2>
+          </div>
+        </div>
+        <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7', maxWidth:'560px', marginBottom:'40px'}}>
+          Enter the property details below to get an estimated value range based on the suburb median and feature adjustments.
+        </p>
+
+        <div className="two-col-grid" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'48px', alignItems:'start'}}>
+
+          {/* ── Form ── */}
+          <div style={{display:'flex', flexDirection:'column', gap:'20px'}}>
+
+            {/* Suburb */}
+            <div>
+              <label style={{display:'block', fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'8px'}}>
+                Suburb
+              </label>
+              <select className="select-input" style={{width:'100%'}} value={est.suburb} onChange={e => { setEst(p => ({...p, suburb: e.target.value})); setEstResult(null) }}>
+                <option value="">— Select suburb —</option>
+                {suburbs.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+              </select>
+            </div>
+
+            {/* Property type */}
+            <div>
+              <label style={{display:'block', fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'8px'}}>
+                Property type
+              </label>
+              <div style={{display:'flex', gap:'0'}}>
+                {['House','Unit','Townhouse'].map(t => (
+                  <button
+                    key={t}
+                    onClick={() => { setEst(p => ({...p, type: t})); setEstResult(null) }}
+                    style={{
+                      flex:'1', padding:'10px 8px', fontSize:'12px', letterSpacing:'0.06em',
+                      border:'1px solid var(--navy-border)', marginRight: t !== 'Townhouse' ? '-1px' : '0',
+                      background: est.type === t ? 'rgba(212,175,55,0.12)' : 'var(--navy-mid)',
+                      color:      est.type === t ? 'var(--gold)' : 'var(--text-muted)',
+                      borderColor: est.type === t ? 'var(--gold)' : 'var(--navy-border)',
+                      cursor:'pointer', transition:'all 0.15s', position:'relative', zIndex: est.type === t ? 1 : 0,
+                    }}
+                  >{t}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Beds / Baths / Cars */}
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'12px'}}>
+              {[
+                { label:'Bedrooms',  key:'beds',  opts:['1','2','3','4','5+'] },
+                { label:'Bathrooms', key:'baths', opts:['1','2','3','4+'] },
+                { label:'Car spaces',key:'cars',  opts:['0','1','2','3+'] },
+              ].map(({ label, key, opts }) => (
+                <div key={key}>
+                  <label style={{display:'block', fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'8px'}}>{label}</label>
+                  <select className="select-input" style={{width:'100%'}} value={est[key]} onChange={e => { setEst(p => ({...p, [key]: e.target.value})); setEstResult(null) }}>
+                    {opts.map(o => <option key={o} value={o.replace('+','')}>{o}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+
+            {/* Land size (houses only) */}
+            {est.type === 'House' && (
+              <div>
+                <label style={{display:'block', fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'8px'}}>
+                  Land size (sqm) <span style={{opacity:0.5, textTransform:'none', letterSpacing:0}}>— optional</span>
+                </label>
+                <input
+                  className="email-input"
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 420"
+                  value={est.land}
+                  onChange={e => { setEst(p => ({...p, land: e.target.value})); setEstResult(null) }}
+                  style={{width:'100%'}}
+                />
+              </div>
+            )}
+
+            <button
+              className="btn-primary"
+              style={{padding:'14px', marginTop:'4px', opacity: est.suburb ? 1 : 0.5, cursor: est.suburb ? 'pointer' : 'default'}}
+              onClick={runEstimator}
+              disabled={!est.suburb}
+            >
+              Estimate value
+            </button>
+          </div>
+
+          {/* ── Result ── */}
+          <div>
+            {!estResult ? (
+              <div style={{padding:'48px 32px', border:'1px solid var(--navy-border)', color:'var(--text-muted)', fontSize:'13px', textAlign:'center', lineHeight:'1.7', background:'var(--navy-mid)'}}>
+                Select a suburb and property details,<br />then click &ldquo;Estimate value&rdquo;.
+              </div>
+            ) : (
+              <div style={{border:'1px solid var(--gold)', background:'rgba(212,175,55,0.03)'}}>
+
+                {/* Range header */}
+                <div style={{padding:'28px 32px', borderBottom:'1px solid rgba(212,175,55,0.2)'}}>
+                  <div style={{fontSize:'10px', letterSpacing:'0.16em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'12px'}}>
+                    Estimated value range
+                  </div>
+                  <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'36px', fontWeight:'300', color:'var(--text-primary)', lineHeight:'1.1'}}>
+                    {estResult.low} — {estResult.high}
+                  </div>
+                  <div style={{marginTop:'10px', fontSize:'13px', color:'var(--text-secondary)'}}>
+                    Midpoint estimate: <span style={{color:'var(--gold-light)', fontFamily:'Cormorant Garamond, serif', fontSize:'18px'}}>{estResult.mid}</span>
+                  </div>
+                </div>
+
+                {/* Basis */}
+                <div style={{padding:'20px 32px', borderBottom:'1px solid rgba(212,175,55,0.1)', fontSize:'13px', color:'var(--text-secondary)', lineHeight:'1.6'}}>
+                  Based on <strong style={{color:'var(--text-primary)'}}>{est.suburb}</strong> median of {estResult.base} with{' '}
+                  {parseFloat(estResult.pct) >= 0
+                    ? <span style={{color:'#4ade80'}}>+{estResult.pct}%</span>
+                    : <span style={{color:'#f87171'}}>{estResult.pct}%</span>
+                  }{' '}feature adjustment and ±15% confidence range.
+                </div>
+
+                {/* Suburb stats */}
+                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'1px', background:'rgba(212,175,55,0.1)'}}>
+                  {[
+                    { label:'Clearance rate', value: estResult.suburb.clearance || '—' },
+                    { label:'Days on market', value: estResult.suburb.dom       || '—' },
+                    { label:'Qtr change',     value: estResult.suburb.change    || '—' },
+                  ].map(({ label, value }) => (
+                    <div key={label} style={{background:'rgba(17,24,39,0.6)', padding:'16px 18px'}}>
+                      <div style={{fontSize:'9px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'6px'}}>{label}</div>
+                      <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'20px', fontWeight:'300', color:'var(--text-primary)'}}>{value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Disclaimer */}
+                <div style={{padding:'14px 32px', fontSize:'11px', color:'var(--text-muted)', lineHeight:'1.5'}}>
+                  This is an estimate only — not a formal valuation. Based on suburb median prices and feature adjustments. Not financial advice.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
       {/* WATCHLIST SIGNUP */}
