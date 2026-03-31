@@ -1,15 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-const LISTING_LINKS = [
-  { name: 'CBD Core',       href: 'https://www.commercialrealestate.com.au/lease/melbourne-vic-3000/' },
-  { name: 'Fitzroy',        href: 'https://www.commercialrealestate.com.au/lease/fitzroy-vic-3065/' },
-  { name: 'Port Melbourne', href: 'https://www.commercialrealestate.com.au/lease/port-melbourne-vic-3207/' },
-  { name: 'Collingwood',    href: 'https://www.commercialrealestate.com.au/lease/collingwood-vic-3066/' },
-  { name: 'Richmond',       href: 'https://www.commercialrealestate.com.au/lease/richmond-vic-3121/' },
-  { name: 'South Melbourne',href: 'https://www.commercialrealestate.com.au/lease/south-melbourne-vic-3205/' },
-]
-
 const STATIC_PRECINCTS = [
   { name: 'CBD Core',       sub: 'Collins St precinct',    type: 'Office',    yield: '6.8%', vacancy: '11.2%', rent: '$680/m²', change: '+0.4%', up: true,  bar: 68 },
   { name: 'Fitzroy',        sub: 'Brunswick St strip',     type: 'Retail',    yield: '5.4%', vacancy: '7.8%',  rent: '$420/m²', change: '+0.6%', up: true,  bar: 54 },
@@ -25,6 +16,7 @@ export default function CommercialPage() {
   const [filter, setFilter] = useState('All')
   const [precincts, setPrecincts] = useState(STATIC_PRECINCTS)
   const [sheetLoaded, setSheetLoaded] = useState(false)
+  const [listingQuery, setListingQuery] = useState('')
 
   useEffect(() => {
     fetch('/api/commercial')
@@ -99,36 +91,36 @@ export default function CommercialPage() {
         </div>
       </section>
 
-      {/* ACTIVE LISTINGS */}
+      {/* LISTING SEARCH */}
       <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}}>
         <div className="section-header">
           <div>
-            <div className="section-eyebrow">Browse active listings · Via Domain</div>
-            <h2 className="section-title">Current listings by precinct.</h2>
+            <div className="section-eyebrow">Search listings · Via Commercial Real Estate</div>
+            <h2 className="section-title">Find commercial properties for lease.</h2>
           </div>
         </div>
         <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7', maxWidth:'520px', marginBottom:'32px'}}>
-          Browse live commercial listings on Domain for each inner-Melbourne precinct. Opens in a new tab.
+          Search any Melbourne suburb on Commercial Real Estate. Opens in a new tab.
         </p>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(min(200px,100%), 1fr))', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
-          {LISTING_LINKS.map(({ name, href }) => (
-            <div key={name} style={{background:'var(--navy-mid)', padding:'28px 24px', display:'flex', flexDirection:'column', gap:'16px'}}>
-              <div>
-                <div style={{fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'8px'}}>Commercial</div>
-                <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'22px', fontWeight:'300', color:'var(--text-primary)'}}>{name}</div>
-              </div>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold)', border:'1px solid var(--gold)', padding:'8px 16px', textDecoration:'none', textAlign:'center', transition:'all 0.2s', background:'transparent', display:'block'}}
-              >
-                View listings →
-              </a>
-            </div>
-          ))}
-        </div>
-        <p style={{marginTop:'16px', fontSize:'11px', color:'var(--text-muted)'}}>Listings sourced from Domain. Opens in a new tab.</p>
+        <form
+          onSubmit={e => {
+            e.preventDefault()
+            const q = listingQuery.trim()
+            if (!q) return
+            const encoded = encodeURIComponent(q + ' VIC')
+            window.open(`https://www.commercialrealestate.com.au/lease/?location=${encoded}`, '_blank', 'noopener,noreferrer')
+          }}
+          style={{display:'flex', gap:'12px', maxWidth:'560px'}}
+        >
+          <input
+            type="text"
+            value={listingQuery}
+            onChange={e => setListingQuery(e.target.value)}
+            placeholder="Search Melbourne properties on Domain..."
+            style={{flex:1, background:'var(--navy-mid)', border:'1px solid var(--navy-border)', color:'var(--text-primary)', padding:'14px 18px', fontSize:'14px', outline:'none'}}
+          />
+          <button type="submit" className="btn-primary" style={{padding:'14px 28px', whiteSpace:'nowrap'}}>Search</button>
+        </form>
       </section>
 
       {/* CTA */}

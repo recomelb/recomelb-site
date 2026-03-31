@@ -16,24 +16,12 @@ const STATIC_SUBURBS = [
   { name: 'South Yarra',   type: 'House', location: 'Inner East',  tag: 'Blue chip',   median: '$1.68M', clearance: 78, dom: 18, change: '+3.9%', up: true,  trend: [1.46,1.49,1.52,1.55,1.57,1.60,1.62,1.63,1.65,1.66,1.67,1.68] },
 ]
 
-const LISTING_LINKS = [
-  { name: 'Fitzroy',       href: 'https://www.domain.com.au/sale/fitzroy-vic-3065/' },
-  { name: 'Collingwood',   href: 'https://www.domain.com.au/sale/collingwood-vic-3066/' },
-  { name: 'Richmond',      href: 'https://www.domain.com.au/sale/richmond-vic-3121/' },
-  { name: 'Northcote',     href: 'https://www.domain.com.au/sale/northcote-vic-3070/' },
-  { name: 'Brunswick',     href: 'https://www.domain.com.au/sale/brunswick-vic-3056/' },
-  { name: 'Abbotsford',    href: 'https://www.domain.com.au/sale/abbotsford-vic-3067/' },
-  { name: 'Carlton',       href: 'https://www.domain.com.au/sale/carlton-vic-3053/' },
-  { name: 'Prahran',       href: 'https://www.domain.com.au/sale/prahran-vic-3181/' },
-  { name: 'South Yarra',   href: 'https://www.domain.com.au/sale/south-yarra-vic-3141/' },
-  { name: 'Fitzroy North', href: 'https://www.domain.com.au/sale/fitzroy-north-vic-3068/' },
-]
-
 export default function ResidentialPage() {
   const [filter, setFilter] = useState('All')
   const [search, setSearch] = useState('')
   const [suburbs, setSuburbs] = useState(STATIC_SUBURBS)
   const [sheetLoaded, setSheetLoaded] = useState(false)
+  const [listingQuery, setListingQuery] = useState('')
 
   useEffect(() => {
     fetch('/api/suburbs')
@@ -118,36 +106,36 @@ export default function ResidentialPage() {
         </div>
       </section>
 
-      {/* ACTIVE LISTINGS */}
+      {/* LISTING SEARCH */}
       <section className="suburb-strip" style={{borderTop:'1px solid var(--navy-border)'}}>
         <div className="section-header">
           <div>
-            <div className="section-eyebrow">Browse active listings · Via Domain</div>
-            <h2 className="section-title">Current listings by suburb.</h2>
+            <div className="section-eyebrow">Search listings · Via Domain</div>
+            <h2 className="section-title">Find properties for sale.</h2>
           </div>
         </div>
         <p style={{color:'var(--text-secondary)', fontSize:'14px', lineHeight:'1.7', maxWidth:'520px', marginBottom:'32px'}}>
-          Browse live residential listings on Domain for each inner-ring suburb. Opens in a new tab.
+          Search any Melbourne suburb on Domain. Opens in a new tab.
         </p>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(min(200px,100%), 1fr))', gap:'1px', background:'var(--navy-border)', border:'1px solid var(--navy-border)'}}>
-          {LISTING_LINKS.map(({ name, href }) => (
-            <div key={name} style={{background:'var(--navy-mid)', padding:'28px 24px', display:'flex', flexDirection:'column', gap:'16px'}}>
-              <div>
-                <div style={{fontSize:'10px', letterSpacing:'0.14em', textTransform:'uppercase', color:'var(--gold)', marginBottom:'8px'}}>Residential</div>
-                <div style={{fontFamily:'Cormorant Garamond, serif', fontSize:'22px', fontWeight:'300', color:'var(--text-primary)'}}>{name}</div>
-              </div>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold)', border:'1px solid var(--gold)', padding:'8px 16px', textDecoration:'none', textAlign:'center', transition:'all 0.2s', background:'transparent', display:'block'}}
-              >
-                View listings →
-              </a>
-            </div>
-          ))}
-        </div>
-        <p style={{marginTop:'16px', fontSize:'11px', color:'var(--text-muted)'}}>Listings sourced from Domain. Opens in a new tab.</p>
+        <form
+          onSubmit={e => {
+            e.preventDefault()
+            const q = listingQuery.trim()
+            if (!q) return
+            const encoded = encodeURIComponent(q + ' VIC')
+            window.open(`https://www.domain.com.au/sale/?suburb=${encoded}`, '_blank', 'noopener,noreferrer')
+          }}
+          style={{display:'flex', gap:'12px', maxWidth:'560px'}}
+        >
+          <input
+            type="text"
+            value={listingQuery}
+            onChange={e => setListingQuery(e.target.value)}
+            placeholder="Search Melbourne properties on Domain..."
+            style={{flex:1, background:'var(--navy-mid)', border:'1px solid var(--navy-border)', color:'var(--text-primary)', padding:'14px 18px', fontSize:'14px', outline:'none'}}
+          />
+          <button type="submit" className="btn-primary" style={{padding:'14px 28px', whiteSpace:'nowrap'}}>Search</button>
+        </form>
       </section>
 
       {/* CTA */}
