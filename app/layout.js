@@ -3,8 +3,14 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'RECOMELB — Residential · Commercial · Melbourne',
-  description: 'Real-time suburb data, auction results and market intelligence for Melbourne\'s inner ring. Updated every Monday.',
+  title: 'RECOMELB — Melbourne Property Intelligence',
+  description: 'Live suburb data, auction clearance rates and market intelligence for Melbourne residential and commercial property. Updated daily.',
+  openGraph: {
+    title: 'RECOMELB — Melbourne Property Intelligence',
+    description: 'Live suburb data, auction clearance rates and market intelligence for Melbourne residential and commercial property. Updated daily.',
+    type: 'website',
+    siteName: 'RECOMELB',
+  },
 }
 
 export const viewport = {

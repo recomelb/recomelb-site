@@ -1,6 +1,15 @@
 import Image from 'next/image'
 
-export const metadata = { title: 'Founder — RECOMELB' }
+export const metadata = {
+  title: 'About RECOMELB | Adi Agarwal',
+  description: 'RECOMELB is a Melbourne property intelligence platform built by Adi Agarwal. Residential and commercial market data, automated daily.',
+  openGraph: {
+    title: 'About RECOMELB | Adi Agarwal',
+    description: 'RECOMELB is a Melbourne property intelligence platform built by Adi Agarwal. Residential and commercial market data, automated daily.',
+    type: 'website',
+    siteName: 'RECOMELB',
+  },
+}
 
 const HOW_IT_WORKS = [
   { num: '01', title: 'Data is collected', desc: 'Public auction results, listing data and vacancy figures are pulled every week from authoritative Melbourne property sources.' },
