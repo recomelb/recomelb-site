@@ -1,0 +1,210 @@
+{
+  "name": "RECOMELB Blog Aggregator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "https://www.realestatebusiness.com.au/feed",
+        "options": {}
+      },
+      "id": "rss-reb",
+      "name": "REB Online RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [460, 180],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.domain.com.au/news/feed/",
+        "options": {}
+      },
+      "id": "rss-domain",
+      "name": "Domain News RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [460, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.propertyobserver.com/feed",
+        "options": {}
+      },
+      "id": "rss-property-observer",
+      "name": "Property Observer RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [460, 420],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "merge-feeds",
+      "name": "Merge All Feeds",
+      "type": "n8n-nodes-base.merge",
+      "position": [680, 300],
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "melbourne",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "filter-melbourne",
+      "name": "Filter Melbourne Content",
+      "type": "n8n-nodes-base.filter",
+      "position": [900, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst formatted = items.slice(0, 3).map(item => {\n  const title = item.json.title || 'No title';\n  const link = item.json.link || '';\n  const excerpt = item.json.contentSnippet || item.json.content || '';\n  const cleanExcerpt = excerpt.replace(/<[^>]*>/g, '').substring(0, 200);\n  const date = new Date().toISOString().split('T')[0];\n  \n  return {\n    json: {\n      title: title,\n      excerpt: cleanExcerpt + '...',\n      link: link,\n      date: date,\n      tag: 'Market Update',\n      approved: 'N',\n      telegramMessage: `📰 New article ready for approval:\\n\\n*${title}*\\n\\n${cleanExcerpt}...\\n\\n🔗 ${link}\\n\\nApprove to publish on RECOMELB?`\n    }\n  };\n});\n\nreturn formatted;"
+      },
+      "id": "format-articles",
+      "name": "Format Articles",
+      "type": "n8n-nodes-base.code",
+      "position": [1120, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.telegramMessage }}",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "reply_markup": {
+            "inline_keyboard": [
+              [
+                {
+                  "text": "✅ Approve",
+                  "callback_data": "={{ 'approve_' + $json.title.substring(0, 30) }}"
+                },
+                {
+                  "text": "❌ Skip",
+                  "callback_data": "skip"
+                }
+              ]
+            ]
+          }
+        }
+      },
+      "id": "telegram-notify",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [1340, 300],
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-creds",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "url",
+          "value": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "blog_posts"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "tag": "={{ $json.tag }}",
+            "excerpt": "={{ $json.excerpt }}",
+            "body": "Full article at source",
+            "date": "={{ $json.date }}",
+            "approved": "N"
+          }
+        },
+        "options": {}
+      },
+      "id": "write-to-sheet",
+      "name": "Write Draft to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [1340, 460],
+      "typeVersion": 4.4,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          { "node": "REB Online RSS", "type": "main", "index": 0 },
+          { "node": "Domain News RSS", "type": "main", "index": 0 },
+          { "node": "Property Observer RSS", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "REB Online RSS": {
+      "main": [[{ "node": "Merge All Feeds", "type": "main", "index": 0 }]]
+    },
+    "Domain News RSS": {
+      "main": [[{ "node": "Merge All Feeds", "type": "main", "index": 1 }]]
+    },
+    "Property Observer RSS": {
+      "main": [[{ "node": "Merge All Feeds", "type": "main", "index": 2 }]]
+    },
+    "Merge All Feeds": {
+      "main": [[{ "node": "Filter Melbourne Content", "type": "main", "index": 0 }]]
+    },
+    "Filter Melbourne Content": {
+      "main": [[{ "node": "Format Articles", "type": "main", "index": 0 }]]
+    },
+    "Format Articles": {
+      "main": [
+        [
+          { "node": "Send to Telegram", "type": "main", "index": 0 },
+          { "node": "Write Draft to Sheet", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "name": "RECOMELB Weekly Email Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [1],
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "weekly-trigger",
+      "name": "Monday 7am Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SHEET_SUBURBS_URL }}",
+        "options": {}
+      },
+      "id": "fetch-suburb-data",
+      "name": "Fetch Suburb Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "const csvData = $input.first().json.data;\nconst lines = csvData.split('\\n');\nconst headers = lines[0].split(',');\nconst suburbs = lines.slice(1, 4).map(line => {\n  const values = line.split(',');\n  return {\n    suburb: values[0],\n    type: values[1],\n    median: values[2],\n    change: values[3],\n    clearance: values[5]\n  };\n});\n\nconst topSuburbs = suburbs.map(s => \n  `<tr><td style='padding:8px;border-bottom:1px solid #1e2d4a;color:#f0ece2'>${s.suburb}</td><td style='padding:8px;border-bottom:1px solid #1e2d4a;color:#c9a84c'>$${parseInt(s.median).toLocaleString()}</td><td style='padding:8px;border-bottom:1px solid #1e2d4a;color:#4ade80'>+${s.change}%</td><td style='padding:8px;border-bottom:1px solid #1e2d4a;color:#f0ece2'>${s.clearance}%</td></tr>`\n).join('');\n\nconst emailHtml = `\n<!DOCTYPE html>\n<html>\n<head><meta charset='utf-8'></head>\n<body style='background:#0a0f1e;font-family:Georgia,serif;padding:40px;'>\n  <div style='max-width:600px;margin:0 auto;'>\n    <h1 style='color:#c9a84c;font-size:28px;letter-spacing:0.1em;margin-bottom:4px;'>RECOMELB</h1>\n    <p style='color:#5a6480;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:40px;'>RESIDENTIAL · COMMERCIAL · MELBOURNE</p>\n    \n    <h2 style='color:#f0ece2;font-size:22px;font-weight:300;margin-bottom:8px;'>This week in Melbourne property</h2>\n    <p style='color:#9ea8be;font-size:14px;margin-bottom:32px;'>${new Date().toLocaleDateString('en-AU', {weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>\n    \n    <h3 style='color:#c9a84c;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;'>Top performing suburbs</h3>\n    <table style='width:100%;border-collapse:collapse;margin-bottom:32px;'>\n      <tr style='border-bottom:1px solid #1e2d4a;'>\n        <th style='padding:8px;text-align:left;color:#5a6480;font-size:11px;letter-spacing:0.1em;'>SUBURB</th>\n        <th style='padding:8px;text-align:left;color:#5a6480;font-size:11px;letter-spacing:0.1em;'>MEDIAN</th>\n        <th style='padding:8px;text-align:left;color:#5a6480;font-size:11px;letter-spacing:0.1em;'>QTR CHANGE</th>\n        <th style='padding:8px;text-align:left;color:#5a6480;font-size:11px;letter-spacing:0.1em;'>CLEARANCE</th>\n      </tr>\n      ${topSuburbs}\n    </table>\n    \n    <div style='border-top:1px solid #1e2d4a;padding-top:24px;margin-top:24px;'>\n      <a href='https://recomelb.com' style='color:#c9a84c;font-size:12px;letter-spacing:0.1em;text-decoration:none;'>VIEW FULL MARKET DATA →</a>\n    </div>\n    \n    <p style='color:#5a6480;font-size:11px;margin-top:32px;'>You're receiving this because you subscribed at recomelb.com · <a href='#' style='color:#5a6480;'>Unsubscribe</a></p>\n  </div>\n</body>\n</html>`;\n\nreturn [{ json: { emailHtml, subject: `Melbourne property pulse — ${new Date().toLocaleDateString('en-AU', {day:'numeric',month:'long'})}` } }];"
+      },
+      "id": "format-email",
+      "name": "Format Email",
+      "type": "n8n-nodes-base.code",
+      "position": [680, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/emailCampaigns",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "YOUR_BREVO_API_KEY"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.subject }}"
+            },
+            {
+              "name": "subject",
+              "value": "={{ $json.subject }}"
+            },
+            {
+              "name": "sender",
+              "value": "={\"name\":\"RECOMELB\",\"email\":\"hello@recomelb.com\"}"
+            },
+            {
+              "name": "type",
+              "value": "classic"
+            },
+            {
+              "name": "htmlContent",
+              "value": "={{ $json.emailHtml }}"
+            },
+            {
+              "name": "recipients",
+              "value": "={\"listIds\":[3]}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "create-campaign",
+      "name": "Create Brevo Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [900, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.brevo.com/v3/emailCampaigns/{{ $json.id }}/sendNow",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "YOUR_BREVO_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-campaign",
+      "name": "Send Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1120, 300],
+      "typeVersion": 4.2
+    }
+  ],
+  "connections": {
+    "Monday 7am Trigger": {
+      "main": [[{ "node": "Fetch Suburb Data", "type": "main", "index": 0 }]]
+    },
+    "Fetch Suburb Data": {
+      "main": [[{ "node": "Format Email", "type": "main", "index": 0 }]]
+    },
+    "Format Email": {
+      "main": [[{ "node": "Create Brevo Campaign", "type": "main", "index": 0 }]]
+    },
+    "Create Brevo Campaign": {
+      "main": [[{ "node": "Send Campaign", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

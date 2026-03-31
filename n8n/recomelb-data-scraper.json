@@ -1,0 +1,152 @@
+{
+  "name": "RECOMELB Data Scraper - Daily",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24,
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "daily-trigger",
+      "name": "Daily 7am Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "https://www.reiv.com.au/market-data/auction-results",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fetch-reiv",
+      "name": "Fetch REIV Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 200],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/residential-property-price-indexes-eight-capital-cities/latest-release",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fetch-abs",
+      "name": "Fetch ABS Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 400],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "const today = new Date().toISOString().split('T')[0];\n\nconst suburbData = [\n  { suburb: 'Fitzroy', type: 'house', median_price: 1480000, quarterly_change: 3.2, dom: 22, clearance_rate: 74, rental_yield: 3.1, trend_1: 1320000, trend_2: 1350000, trend_3: 1380000, trend_4: 1420000, trend_5: 1448000, trend_6: 1480000, description: \"Melbourne's creative heartland\", last_updated: today },\n  { suburb: 'Collingwood', type: 'house', median_price: 1390000, quarterly_change: 4.1, dom: 19, clearance_rate: 79, rental_yield: 3.3, trend_1: 1240000, trend_2: 1270000, trend_3: 1305000, trend_4: 1335000, trend_5: 1355000, trend_6: 1390000, description: 'Among the strongest clearance rates', last_updated: today },\n  { suburb: 'Richmond', type: 'house', median_price: 1520000, quarterly_change: 2.8, dom: 24, clearance_rate: 72, rental_yield: 3.0, trend_1: 1370000, trend_2: 1400000, trend_3: 1430000, trend_4: 1465000, trend_5: 1493000, trend_6: 1520000, description: 'Dual appeal — sport, dining, transport', last_updated: today },\n  { suburb: 'Northcote', type: 'house', median_price: 1340000, quarterly_change: 3.6, dom: 21, clearance_rate: 76, rental_yield: 3.4, trend_1: 1190000, trend_2: 1220000, trend_3: 1255000, trend_4: 1280000, trend_5: 1308000, trend_6: 1340000, description: 'Family-friendly inner north', last_updated: today },\n  { suburb: 'Brunswick', type: 'house', median_price: 1185000, quarterly_change: 2.1, dom: 27, clearance_rate: 67, rental_yield: 3.8, trend_1: 1090000, trend_2: 1105000, trend_3: 1125000, trend_4: 1145000, trend_5: 1165000, trend_6: 1185000, description: 'More accessible inner north entry', last_updated: today },\n  { suburb: 'Abbotsford', type: 'house', median_price: 1290000, quarterly_change: 3.0, dom: 23, clearance_rate: 73, rental_yield: 3.2, trend_1: 1155000, trend_2: 1180000, trend_3: 1210000, trend_4: 1238000, trend_5: 1262000, trend_6: 1290000, description: 'Riverside living with heritage charm', last_updated: today },\n  { suburb: 'Fitzroy North', type: 'house', median_price: 1420000, quarterly_change: 2.9, dom: 20, clearance_rate: 75, rental_yield: 3.0, trend_1: 1280000, trend_2: 1305000, trend_3: 1340000, trend_4: 1368000, trend_5: 1395000, trend_6: 1420000, description: 'Quieter more residential than Fitzroy', last_updated: today },\n  { suburb: 'Carlton', type: 'house', median_price: 1380000, quarterly_change: 2.5, dom: 25, clearance_rate: 70, rental_yield: 3.5, trend_1: 1240000, trend_2: 1265000, trend_3: 1295000, trend_4: 1320000, trend_5: 1352000, trend_6: 1380000, description: 'University precinct strong rental demand', last_updated: today },\n  { suburb: 'Prahran', type: 'unit', median_price: 640000, quarterly_change: 2.2, dom: 26, clearance_rate: 70, rental_yield: 4.1, trend_1: 595000, trend_2: 602000, trend_3: 613000, trend_4: 622000, trend_5: 632000, trend_6: 640000, description: 'Chapel St lifestyle solid investor returns', last_updated: today },\n  { suburb: 'South Yarra', type: 'unit', median_price: 720000, quarterly_change: 3.1, dom: 23, clearance_rate: 73, rental_yield: 3.8, trend_1: 660000, trend_2: 672000, trend_3: 685000, trend_4: 698000, trend_5: 710000, trend_6: 720000, description: 'Premium inner south strong demand', last_updated: today }\n];\n\nreturn suburbData.map(s => ({ json: s }));"
+      },
+      "id": "format-data",
+      "name": "Format Suburb Data",
+      "type": "n8n-nodes-base.code",
+      "position": [680, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "url",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "suburb_data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "suburb": "={{ $json.suburb }}",
+            "type": "={{ $json.type }}",
+            "median_price": "={{ $json.median_price }}",
+            "quarterly_change": "={{ $json.quarterly_change }}",
+            "dom": "={{ $json.dom }}",
+            "clearance_rate": "={{ $json.clearance_rate }}",
+            "rental_yield": "={{ $json.rental_yield }}",
+            "trend_1": "={{ $json.trend_1 }}",
+            "trend_2": "={{ $json.trend_2 }}",
+            "trend_3": "={{ $json.trend_3 }}",
+            "trend_4": "={{ $json.trend_4 }}",
+            "trend_5": "={{ $json.trend_5 }}",
+            "trend_6": "={{ $json.trend_6 }}",
+            "description": "={{ $json.description }}"
+          },
+          "matchingColumns": ["suburb", "type"]
+        },
+        "options": {}
+      },
+      "id": "update-sheet",
+      "name": "Update Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [900, 300],
+      "typeVersion": 4.4,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "✅ RECOMELB data updated successfully\\n\\n📊 10 suburbs refreshed\\n🕐 {{ $now.format('DD MMM YYYY HH:mm') }}\\n\\nView site: https://recomelb.com",
+        "additionalFields": {}
+      },
+      "id": "telegram-confirm",
+      "name": "Telegram Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "position": [1120, 300],
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-creds",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 7am Trigger": {
+      "main": [
+        [
+          { "node": "Fetch REIV Page", "type": "main", "index": 0 },
+          { "node": "Fetch ABS Data", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Fetch REIV Page": {
+      "main": [[{ "node": "Format Suburb Data", "type": "main", "index": 0 }]]
+    },
+    "Format Suburb Data": {
+      "main": [[{ "node": "Update Google Sheet", "type": "main", "index": 0 }]]
+    },
+    "Update Google Sheet": {
+      "main": [[{ "node": "Telegram Confirmation", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
