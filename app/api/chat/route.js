@@ -8,10 +8,10 @@ function buildContext(rows) {
 
   const lines = rows.map(r => {
     const parts = [r.suburb]
-    if (r.median_price)    parts.push(`median $${(parseFloat(r.median_price) / 1_000_000).toFixed(2)}M`)
-    if (r.clearance_rate)  parts.push(`clearance ${r.clearance_rate}%`)
-    if (r.dom)             parts.push(`${r.dom} days on market`)
-    if (r.rental_yield)    parts.push(`yield ${r.rental_yield}%`)
+    if (r.median_price)     parts.push(`median $${(parseFloat(r.median_price) / 1_000_000).toFixed(2)}M`)
+    if (r.clearance_rate)   parts.push(`clearance ${r.clearance_rate}%`)
+    if (r.dom)              parts.push(`${r.dom} days on market`)
+    if (r.rental_yield)     parts.push(`yield ${r.rental_yield}%`)
     if (r.quarterly_change) parts.push(`quarterly change ${r.quarterly_change}%`)
     return parts.join(', ')
   })
@@ -29,15 +29,20 @@ export async function POST(request) {
 
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
+      console.error('[chat] GEMINI_API_KEY is not set')
       return Response.json({ error: 'Chat service unavailable.' }, { status: 503 })
     }
+
+    console.log('[chat] API key present, length:', apiKey.length, 'prefix:', apiKey.slice(0, 8))
 
     // Fetch live suburb data — fall back to empty context on sheet error
     let suburbContext = ''
     try {
       const rows = await getSuburbData()
       suburbContext = buildContext(rows)
-    } catch {
+      console.log('[chat] Sheet data loaded, rows:', rows.length)
+    } catch (sheetErr) {
+      console.warn('[chat] Sheet fetch failed:', sheetErr.message)
       suburbContext = 'Live suburb data temporarily unavailable.'
     }
 
@@ -47,15 +52,41 @@ export async function POST(request) {
       systemInstruction: SYSTEM_PROMPT,
     })
 
-    // Build the full prompt with live data injected as context
     const fullPrompt = `${suburbContext}\n\n${context ? `Additional context: ${context}\n\n` : ''}User question: ${message.trim()}`
 
-    const result = await model.generateContent(fullPrompt)
-    const text = result.response.text()
+    console.log('[chat] Sending to Gemini, prompt length:', fullPrompt.length)
 
+    const result = await model.generateContent(fullPrompt)
+
+    // result.response.text() throws if the response was blocked by safety filters
+    let text
+    try {
+      text = result.response.text()
+    } catch (textErr) {
+      console.error('[chat] response.text() threw — likely safety block:', textErr.message)
+      console.error('[chat] finishReason:', result.response?.candidates?.[0]?.finishReason)
+      return Response.json({ error: 'Response was blocked. Please rephrase your question.' }, { status: 422 })
+    }
+
+    console.log('[chat] Gemini responded, response length:', text.length)
     return Response.json({ response: text })
+
   } catch (err) {
-    console.error('[chat] Error:', err.message)
-    return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
+    // Log every available field — GoogleGenerativeAIFetchError has status + statusText
+    console.error('[chat] ERROR name:', err.name)
+    console.error('[chat] ERROR message:', err.message)
+    console.error('[chat] ERROR status:', err.status)
+    console.error('[chat] ERROR statusText:', err.statusText)
+    console.error('[chat] ERROR errorDetails:', JSON.stringify(err.errorDetails ?? null))
+    console.error('[chat] ERROR stack:', err.stack)
+
+    return Response.json({
+      error: 'Something went wrong. Please try again.',
+      _debug: {
+        name:    err.name,
+        message: err.message,
+        status:  err.status ?? null,
+      },
+    }, { status: 500 })
   }
 }
