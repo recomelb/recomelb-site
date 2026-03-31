@@ -1,7 +1,9 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getSuburbData } from '@/lib/sheets'
 
 const SYSTEM_PROMPT = `You are RECOMELB's property intelligence assistant for Melbourne. You have access to live suburb data including median prices, clearance rates, days on market and rental yields. Answer questions about Melbourne property clearly and concisely. Always reference specific data when available. Never give financial advice — instead give data-driven insights.`
+
+const GEMINI_URL = (model, key) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`
 
 function buildContext(rows) {
   if (!rows.length) return 'No suburb data currently available.'
@@ -17,6 +19,39 @@ function buildContext(rows) {
   })
 
   return `Current Melbourne inner-ring suburb data:\n${lines.join('\n')}`
+}
+
+async function callGemini(model, apiKey, prompt) {
+  const res = await fetch(GEMINI_URL(model, apiKey), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [{ parts: [{ text: prompt }] }],
+    }),
+  })
+
+  const json = await res.json()
+
+  if (!res.ok) {
+    const err = new Error(json?.error?.message || `Gemini ${res.status}`)
+    err.status = res.status
+    err.geminiError = json?.error
+    throw err
+  }
+
+  // Extract text from response
+  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text
+  const finishReason = json?.candidates?.[0]?.finishReason
+
+  if (!text) {
+    const err = new Error(`No text in response (finishReason: ${finishReason})`)
+    err.status = 422
+    err.finishReason = finishReason
+    throw err
+  }
+
+  return text
 }
 
 export async function POST(request) {
@@ -35,7 +70,7 @@ export async function POST(request) {
 
     console.log('[chat] API key present, length:', apiKey.length, 'prefix:', apiKey.slice(0, 8))
 
-    // Fetch live suburb data — fall back to empty context on sheet error
+    // Fetch live suburb data — fall back gracefully on sheet error
     let suburbContext = ''
     try {
       const rows = await getSuburbData()
@@ -46,62 +81,48 @@ export async function POST(request) {
       suburbContext = 'Live suburb data temporarily unavailable.'
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey)
-
-    // Try primary model, fall back to lite if primary is rate-limited
     const fullPrompt = `${suburbContext}\n\n${context ? `Additional context: ${context}\n\n` : ''}User question: ${message.trim()}`
     console.log('[chat] Sending to Gemini, prompt length:', fullPrompt.length)
 
-    let result
+    // Try primary model, fall back to lite on rate limit
+    let text
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash', systemInstruction: SYSTEM_PROMPT })
-      result = await model.generateContent(fullPrompt)
+      text = await callGemini('gemini-2.0-flash', apiKey, fullPrompt)
     } catch (primaryErr) {
+      console.error('[chat] gemini-2.0-flash failed — status:', primaryErr.status, 'message:', primaryErr.message)
       if (primaryErr.status === 429) {
-        console.warn('[chat] gemini-2.0-flash rate limited, trying gemini-2.0-flash-lite')
-        const lite = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite', systemInstruction: SYSTEM_PROMPT })
-        result = await lite.generateContent(fullPrompt)
+        console.warn('[chat] Rate limited, retrying with gemini-2.0-flash-lite')
+        text = await callGemini('gemini-2.0-flash-lite', apiKey, fullPrompt)
       } else {
         throw primaryErr
       }
     }
 
-    // result.response.text() throws if the response was blocked by safety filters
-    let text
-    try {
-      text = result.response.text()
-    } catch (textErr) {
-      console.error('[chat] response.text() threw — likely safety block:', textErr.message)
-      console.error('[chat] finishReason:', result.response?.candidates?.[0]?.finishReason)
-      return Response.json({ error: 'Response was blocked. Please rephrase your question.' }, { status: 422 })
-    }
-
-    console.log('[chat] Gemini responded, response length:', text.length)
+    console.log('[chat] Gemini responded, length:', text.length)
     return Response.json({ response: text })
 
   } catch (err) {
-    // Log every available field — GoogleGenerativeAIFetchError has status + statusText
-    console.error('[chat] ERROR name:', err.name)
-    console.error('[chat] ERROR message:', err.message)
     console.error('[chat] ERROR status:', err.status)
-    console.error('[chat] ERROR statusText:', err.statusText)
-    console.error('[chat] ERROR errorDetails:', JSON.stringify(err.errorDetails ?? null))
-    console.error('[chat] ERROR stack:', err.stack)
+    console.error('[chat] ERROR message:', err.message)
+    console.error('[chat] ERROR geminiError:', JSON.stringify(err.geminiError ?? null))
 
     if (err.status === 429) {
       return Response.json({
         error: 'The assistant is busy right now — please try again in a moment.',
-        _debug: { name: err.name, message: err.message, status: 429 },
+        _debug: { message: err.message, status: 429 },
       }, { status: 429 })
+    }
+
+    if (err.status === 422) {
+      return Response.json({
+        error: 'Response was blocked. Please rephrase your question.',
+        _debug: { message: err.message, finishReason: err.finishReason },
+      }, { status: 422 })
     }
 
     return Response.json({
       error: 'Something went wrong. Please try again.',
-      _debug: {
-        name:    err.name,
-        message: err.message,
-        status:  err.status ?? null,
-      },
+      _debug: { message: err.message, status: err.status ?? null },
     }, { status: 500 })
   }
 }
