@@ -47,16 +47,24 @@ export async function POST(request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey)
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      systemInstruction: SYSTEM_PROMPT,
-    })
 
+    // Try primary model, fall back to lite if primary is rate-limited
     const fullPrompt = `${suburbContext}\n\n${context ? `Additional context: ${context}\n\n` : ''}User question: ${message.trim()}`
-
     console.log('[chat] Sending to Gemini, prompt length:', fullPrompt.length)
 
-    const result = await model.generateContent(fullPrompt)
+    let result
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash', systemInstruction: SYSTEM_PROMPT })
+      result = await model.generateContent(fullPrompt)
+    } catch (primaryErr) {
+      if (primaryErr.status === 429) {
+        console.warn('[chat] gemini-2.0-flash rate limited, trying gemini-2.0-flash-lite')
+        const lite = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite', systemInstruction: SYSTEM_PROMPT })
+        result = await lite.generateContent(fullPrompt)
+      } else {
+        throw primaryErr
+      }
+    }
 
     // result.response.text() throws if the response was blocked by safety filters
     let text
@@ -79,6 +87,13 @@ export async function POST(request) {
     console.error('[chat] ERROR statusText:', err.statusText)
     console.error('[chat] ERROR errorDetails:', JSON.stringify(err.errorDetails ?? null))
     console.error('[chat] ERROR stack:', err.stack)
+
+    if (err.status === 429) {
+      return Response.json({
+        error: 'The assistant is busy right now — please try again in a moment.',
+        _debug: { name: err.name, message: err.message, status: 429 },
+      }, { status: 429 })
+    }
 
     return Response.json({
       error: 'Something went wrong. Please try again.',
