@@ -1,6 +1,7 @@
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import ChatWidget from '@/components/ChatWidget'
 
 export const metadata = {
   title: 'RECOMELB — Melbourne Property Intelligence',
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
         <Nav />
         {children}
         <Footer />
+        <ChatWidget />
       </body>
     </html>
   )
