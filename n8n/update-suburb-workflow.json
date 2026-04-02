@@ -1,5 +1,34 @@
 {
   "name": "RECOMELB — Weekly Suburb Data Update",
+  "_comment": {
+    "architecture": [
+      "Schedule trigger → POST /api/run-scraper → split rows → Google Sheets update",
+      "",
+      "Flow:",
+      "  1. Every Monday 6am: trigger fires",
+      "  2. HTTP POST to /api/run-scraper (Playwright scraper on your server)",
+      "     Returns: { suburbs: [{ name, median, dom, clearance, rental_yield }] }",
+      "  3. Split Items: one item per suburb",
+      "  4. Google Sheets: update matching row in suburb_data tab",
+      "  5. Log success or failure"
+    ],
+    "setup": [
+      "In n8n Settings → Variables, set:",
+      "  RECOMELB_URL    = http://localhost:3000  (or your server URL)",
+      "  UPDATE_API_KEY  = recomelb-update-2025   (matches .env.local)",
+      "",
+      "In the Google Sheets node:",
+      "  - Connect your Google account via n8n credentials",
+      "  - Set Spreadsheet ID to your sheet ID",
+      "  - Set Sheet Name to: suburb_data",
+      "  - Match column: suburb (text equals {{ $json.name }})",
+      "  - Update columns: median_price, dom, clearance_rate, rental_yield",
+      "",
+      "NOTE: /api/run-scraper uses Playwright (real browser).",
+      "It must run on a server with Chromium installed — not Vercel serverless.",
+      "Point RECOMELB_URL at your local dev server or a VPS."
+    ]
+  },
   "nodes": [
     {
       "parameters": {
@@ -15,134 +44,137 @@
           ]
         }
       },
-      "id": "3a1f2b8c-0001-4a2d-8e5f-111111111111",
+      "id": "node-schedule",
       "name": "Every Monday 6am",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
-      "position": [240, 300]
+      "position": [180, 300]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.RECOMELB_URL }}/api/update-suburb-data",
+        "url": "={{ $vars.RECOMELB_URL }}/api/run-scraper",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "x-api-key",
-              "value": "={{ $vars.UPDATE_API_KEY }}"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
+            { "name": "x-api-key", "value": "={{ $vars.UPDATE_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "options": {
-          "timeout": 58000,
-          "response": {
-            "response": {
-              "fullResponse": false
-            }
-          }
+          "timeout": 130000,
+          "response": { "response": { "fullResponse": false } }
         }
       },
-      "id": "3a1f2b8c-0002-4a2d-8e5f-222222222222",
-      "name": "Update Suburb Data",
+      "id": "node-scraper",
+      "name": "Run Playwright Scraper",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [480, 300],
+      "position": [420, 300],
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": false,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
+        "fieldToSplitOut": "suburbs",
+        "options": {}
+      },
+      "id": "node-split",
+      "name": "Split Suburbs",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $vars.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "suburb_data",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "suburb":        "={{ $json.name }}",
+            "median_price":  "={{ $json.median }}",
+            "dom":           "={{ $json.dom }}",
+            "clearance_rate":"={{ $json.clearance }}",
+            "rental_yield":  "={{ $json.rental_yield }}"
+          }
+        },
+        "where": {
+          "values": [
             {
-              "id": "check-updated",
-              "leftValue": "={{ $json.updated }}",
-              "rightValue": 1,
-              "operator": {
-                "type": "number",
-                "operation": "gte"
-              }
+              "column": "suburb",
+              "condition": "textEquals",
+              "value": "={{ $json.name }}"
             }
-          ],
-          "combinator": "and"
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-sheets",
+      "name": "Update Google Sheet Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [900, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-cred",
+          "name": "Google Sheets account"
         }
       },
-      "id": "3a1f2b8c-0003-4a2d-8e5f-333333333333",
-      "name": "Success?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [720, 300]
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "const data = $input.first().json;\nconsole.log('[RECOMELB] Update succeeded:',\n  `${data.updated} suburbs updated, ${data.cells_updated} cells written at ${data.timestamp}`);\nif (data.errors?.length) {\n  console.warn('[RECOMELB] Partial errors:', data.errors.join('; '));\n}\nreturn [{ json: { status: 'success', ...data } }];"
+        "jsCode": "const items = $input.all();\nconst succeeded = items.filter(i => !i.json.error).length;\nconst failed = items.length - succeeded;\nconsole.log(`[RECOMELB] Sheet update complete: ${succeeded} rows updated, ${failed} failed`);\nreturn [{ json: { status: 'done', succeeded, failed } }];"
       },
-      "id": "3a1f2b8c-0004-4a2d-8e5f-444444444444",
-      "name": "Log Success",
+      "id": "node-log-success",
+      "name": "Log Result",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [960, 220]
+      "position": [1140, 220]
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconsole.error('[RECOMELB] Update failed or returned 0 suburbs:', JSON.stringify(input));\nreturn [{ json: { status: 'failed', response: input } }];"
+        "jsCode": "const input = $input.first().json;\nconsole.error('[RECOMELB] Scraper call failed:', JSON.stringify(input));\nreturn [{ json: { status: 'scraper_failed', response: input } }];"
       },
-      "id": "3a1f2b8c-0005-4a2d-8e5f-555555555555",
-      "name": "Log Failure",
+      "id": "node-log-failure",
+      "name": "Log Scraper Failure",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [960, 400]
+      "position": [660, 460]
     }
   ],
   "connections": {
     "Every Monday 6am": {
-      "main": [
-        [{ "node": "Update Suburb Data", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Run Playwright Scraper", "type": "main", "index": 0 }]]
     },
-    "Update Suburb Data": {
-      "main": [
-        [{ "node": "Success?", "type": "main", "index": 0 }]
-      ],
-      "error": [
-        [{ "node": "Log Failure", "type": "main", "index": 0 }]
-      ]
+    "Run Playwright Scraper": {
+      "main":  [[{ "node": "Split Suburbs", "type": "main", "index": 0 }]],
+      "error": [[{ "node": "Log Scraper Failure", "type": "main", "index": 0 }]]
     },
-    "Success?": {
-      "main": [
-        [{ "node": "Log Success", "type": "main", "index": 0 }],
-        [{ "node": "Log Failure", "type": "main", "index": 0 }]
-      ]
+    "Split Suburbs": {
+      "main": [[{ "node": "Update Google Sheet Row", "type": "main", "index": 0 }]]
+    },
+    "Update Google Sheet Row": {
+      "main": [[{ "node": "Log Result", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
     "saveManualExecutions": true,
-    "saveExecutionProgress": true,
-    "errorWorkflow": ""
+    "saveExecutionProgress": true
   },
   "meta": {
     "instanceId": "recomelb",
-    "templateCredsSetupCompleted": true
-  },
-  "_comment": {
-    "setup": [
-      "1. In n8n, set two Variables (Settings → Variables):",
-      "   RECOMELB_URL  = https://www.recomelb.com.au",
-      "   UPDATE_API_KEY = <same value as UPDATE_API_KEY in Vercel env vars>",
-      "2. Import this workflow via n8n → Workflows → Import from file",
-      "3. Activate the workflow — it will fire every Monday at 6am",
-      "4. To test manually: open workflow → Execute workflow"
-    ]
+    "templateCredsSetupCompleted": false
   }
 }
