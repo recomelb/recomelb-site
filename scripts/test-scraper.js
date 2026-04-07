@@ -50,13 +50,13 @@ try {
   console.log('-'.repeat(60))
 
   for (const r of results) {
-    const median = r.median ? `$${(r.median / 1_000_000).toFixed(2)}M` : '—'
-    const dom    = r.dom    ? `${r.dom}d`                               : '—'
-    const yld    = r.rental_yield ? `${r.rental_yield}%`               : '—'
-    const clr    = r.clearance    ? `${r.clearance}%`                  : '—'
+    const median = r.median_price ? `$${(r.median_price / 1_000_000).toFixed(2)}M` : '—'
+    const dom    = r.dom          ? `${r.dom}d`                                     : '—'
+    const yld    = r.rental_yield ? `${r.rental_yield}%`                            : '—'
+    const clr    = r.clearance_rate ? `${r.clearance_rate}%`                        : '—'
 
     console.log([
-      r.name.padEnd(colW[0]),
+      r.suburb.padEnd(colW[0]),
       median.padEnd(colW[1]),
       dom.padEnd(colW[2]),
       yld.padEnd(colW[3]),
@@ -64,7 +64,7 @@ try {
     ].join(' '))
   }
 
-  const populated = results.filter(r => r.median || r.dom || r.rental_yield || r.clearance).length
+  const populated = results.filter(r => r.median_price || r.dom || r.rental_yield || r.clearance_rate).length
   console.log('')
   console.log(`Coverage: ${populated}/${results.length} suburbs have at least one data point`)
 
