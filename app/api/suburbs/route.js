@@ -1,4 +1,4 @@
-import { getSuburbData } from '@/lib/sheets'
+import { google } from 'googleapis'
 
 function formatMedian(raw) {
   const n = parseFloat(raw)
@@ -16,13 +16,40 @@ function capitalize(str) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : ''
 }
 
+export const revalidate = 3600  // cache for 1 hour
+
 export async function GET() {
   try {
-    const rows = await getSuburbData()
-    const suburbs = rows.map(r => {
+    const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID
+
+    if (!raw || !spreadsheetId) return Response.json([])
+
+    const creds = JSON.parse(raw)
+    const auth = new google.auth.JWT(
+      creds.client_email,
+      null,
+      creds.private_key,
+      ['https://www.googleapis.com/auth/spreadsheets.readonly']
+    )
+    const sheetsClient = google.sheets({ version: 'v4', auth })
+
+    const res = await sheetsClient.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'suburb_data!A1:Z200',
+    })
+
+    const rows = res.data.values ?? []
+    if (rows.length < 2) return Response.json([])
+
+    const headers = rows[0].map(h => h?.trim().toLowerCase().replace(/\s+/g, '_'))
+    const dataRows = rows.slice(1).filter(r => r.length > 0 && r[0]?.trim())
+
+    const suburbs = dataRows.map(row => {
+      const r = Object.fromEntries(headers.map((h, i) => [h, row[i] ?? '']))
       const change = parseFloat(r.quarterly_change)
-      const trend = ['trend_1','trend_2','trend_3','trend_4','trend_5','trend_6']
-        .map(k => parseFloat(r[k]) / 1_000_000)
+      const trend = [1, 2, 3, 4, 5, 6]
+        .map(n => parseFloat(r[`trend_${n}`]) / 1_000_000)
         .filter(v => !isNaN(v))
 
       return {
@@ -39,6 +66,7 @@ export async function GET() {
         trend,
       }
     })
+
     return Response.json(suburbs)
   } catch {
     return Response.json([])

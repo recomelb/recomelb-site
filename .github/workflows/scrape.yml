@@ -1,13 +1,13 @@
-name: Daily Suburb Data Update
+name: Daily Suburb Data Scrape
 
 on:
   schedule:
     # 21:00 UTC = 7am AEST (UTC+10) / 8am AEDT (UTC+11)
     - cron: '0 21 * * *'
-  workflow_dispatch:  # allow manual trigger from GitHub Actions UI
+  workflow_dispatch:  # allow manual trigger from GitHub Actions tab
 
 jobs:
-  update-sheet:
+  scrape-and-update:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -27,8 +27,8 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium --with-deps
 
-      - name: Run scraper and update sheet
+      - name: Scrape and update sheet
         env:
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
-          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: node scripts/update-sheet.js

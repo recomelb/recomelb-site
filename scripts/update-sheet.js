@@ -13,7 +13,7 @@
  *   GOOGLE_SHEET_ID              — the sheet ID from the URL
  *                                  (https://docs.google.com/spreadsheets/d/<ID>/edit)
  *
- *   GOOGLE_SERVICE_ACCOUNT_KEY   — the full JSON key for a Google Service Account
+ *   GOOGLE_SERVICE_ACCOUNT_JSON  — the full JSON key for a Google Service Account
  *                                  that has been granted Editor access to the sheet.
  *                                  Paste the entire JSON as a single-line string.
  *
@@ -37,22 +37,22 @@ import { runScraper } from '../lib/scraper.js'
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID
-const SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+const SERVICE_ACCOUNT_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
 
 if (!SHEET_ID) {
   console.error('Missing GOOGLE_SHEET_ID environment variable.')
   process.exit(1)
 }
-if (!SERVICE_ACCOUNT_KEY) {
-  console.error('Missing GOOGLE_SERVICE_ACCOUNT_KEY environment variable.')
+if (!SERVICE_ACCOUNT_JSON) {
+  console.error('Missing GOOGLE_SERVICE_ACCOUNT_JSON environment variable.')
   process.exit(1)
 }
 
 let credentials
 try {
-  credentials = JSON.parse(SERVICE_ACCOUNT_KEY)
+  credentials = JSON.parse(SERVICE_ACCOUNT_JSON)
 } catch {
-  console.error('GOOGLE_SERVICE_ACCOUNT_KEY is not valid JSON.')
+  console.error('GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON.')
   process.exit(1)
 }
 
